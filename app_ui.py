@@ -94,22 +94,22 @@ def carregar_json_relatorio():
 def main():
     # Header Principal
     st.markdown('<div class="main-header">🛡️ GraphRAG Compliance & Auditoria Suite</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Auditoria de Conformidade Legal com Barra de Progresso em Tempo Real (Console & Web)</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Auditoria de 10 Tópicos Críticos com IA Local Paralelizada (Ollama) ou Cloud (Gemini API)</div>', unsafe_allow_html=True)
 
     # Sidebar - Configurações da Auditoria
     st.sidebar.image("https://img.icons8.com/isometric-folders/100/security-checked.png", width=70)
     st.sidebar.header("⚙️ Configurações da Análise")
     
-    # 1. Seleção do Provedor de IA
     provedor_opcao = st.sidebar.radio(
         "🤖 Provedor de Inteligência Artificial:",
         options=["🤖 Ollama Local (Sem Limites)", "☁️ Google Gemini API (Com Limites)", "⚙️ Motor de Regras (Sem IA)"],
         index=0,
-        help="Ollama Local roda 100% no seu computador sem limites de requisições por minuto e sem custos de API."
+        help="Ollama Local roda 100% no seu computador sem limites de requisições por minuto e permite execução paralela de tópicos."
     )
     
     provedor_cod = "ollama" if "Ollama" in provedor_opcao else ("gemini" if "Gemini" in provedor_opcao else "heuristico")
     modelo_local_sel = "gemma4:12b"
+    max_workers_sel = 2
     
     if provedor_cod == "ollama":
         modelos_detectados = listar_modelos_ollama_locais()
@@ -124,6 +124,14 @@ def main():
             modelo_local_sel = st.sidebar.text_input("Nome do Modelo Ollama:", value="gemma4:12b")
             st.sidebar.info("💡 Certifique-se de que o serviço do Ollama está rodando localmente na porta 11434.")
             
+        max_workers_sel = st.sidebar.slider(
+            "⚡ Tópicos Simultâneos (Paralelização):",
+            min_value=1,
+            max_value=4,
+            value=2,
+            help="Executa 2 ou mais tópicos simultaneamente na sua GPU/CPU local para dobrar a velocidade."
+        )
+            
     elif provedor_cod == "gemini":
         api_key_input = st.sidebar.text_input(
             "Chave API do Gemini:",
@@ -132,6 +140,7 @@ def main():
         )
         if api_key_input:
             os.environ["GEMINI_API_KEY"] = api_key_input
+        max_workers_sel = 1
             
     st.sidebar.divider()
 
@@ -145,16 +154,16 @@ def main():
     triplas_atuais = carregar_ou_inicializar_triplas()
     st.sidebar.info(f"📊 **triplas.json**: {len(triplas_atuais)} triplas únicas cadastradas.")
     
-    btn_executar = st.sidebar.button("🚀 Executar Auditoria GraphRAG", width="stretch", type="primary")
+    btn_executar = st.sidebar.button("🚀 Executar Auditoria GraphRAG (10 Tópicos)", width="stretch", type="primary")
 
     if btn_executar:
         urls_lista = [u.strip() for u in urls_input.splitlines() if u.strip()]
         if not urls_lista:
             st.error("Por favor, insira pelo menos uma URL válida.")
         else:
-            st.markdown("### ⏳ Processamento da Auditoria em Tempo Real")
+            st.markdown("### ⏳ Processamento da Auditoria de 10 Tópicos em Tempo Real")
             st_progress_bar = st.progress(0, text="Iniciando raspagem e auditoria...")
-            st_status_box = st.status(f"🔍 Executando via {provedor_opcao}...", expanded=True)
+            st_status_box = st.status(f"🔍 Executando 10 tópicos via {provedor_opcao} (Paralelo: {max_workers_sel}x)...", expanded=True)
 
             def web_progress_callback(atual, total, mensagem):
                 pct = float(atual) / float(total)
@@ -165,11 +174,12 @@ def main():
                 urls_lista, 
                 provedor=provedor_cod, 
                 modelo_local=modelo_local_sel,
-                progress_callback=web_progress_callback
+                progress_callback=web_progress_callback,
+                max_workers=max_workers_sel
             )
             gerar_markdown_do_json(PATH_JSON, PATH_MD)
-            st_status_box.update(label="✅ Auditoria GraphRAG concluída com sucesso!", state="complete")
-            st.success("✅ Relatório de Compliance gerado com sucesso!")
+            st_status_box.update(label="✅ Auditoria de 10 Tópicos concluída com sucesso!", state="complete")
+            st.success("✅ Relatório de Compliance de 10 Tópicos gerado com sucesso!")
             st.rerun()
 
     # Carrega dados do último relatório
@@ -199,7 +209,7 @@ def main():
         c3.metric("🔴 Não Conformidades", resumo_st.get("NAO_CONFORME", 0), delta_color="inverse")
         c4.metric("🟡 Pontos de Atenção", resumo_st.get("ATENCAO", 0))
 
-        st.caption(f"🤖 **Motor da Análise:** `{meta.get('provedor_ia', 'N/A')}`")
+        st.caption(f"🤖 **Motor da Análise:** `{meta.get('provedor_ia', 'N/A')}` | ⚡ **Paralelização:** `{meta.get('paralelizacao_trabalhadores', 1)} tópicos simultâneos`")
 
         st.divider()
 

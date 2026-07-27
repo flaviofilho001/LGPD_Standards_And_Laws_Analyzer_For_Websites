@@ -2,13 +2,15 @@
 
 Constrói o Grafo de Conhecimento de Compliance (LGPD, ISO 27001, ISO 27002, ISO 31000, TPRM),
 submete dados raspados de sites a auditorias por subgrafos e gera relatorio_auditoria.json estruturado.
-Suporta execução via Ollama Local (Sem Limites) ou Gemini API, com barras de progresso (Console tqdm & Streamlit Web).
+Suporta execução paralela em modelos locais (Ollama) com N trabalhadores simultâneos de forma thread-safe.
 """
 
 import json
 import os
 import re
 import sys
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import networkx as nx
 from tqdm import tqdm
 
@@ -33,6 +35,7 @@ from util_scraper import raspar_multiplas_urls
 from util_triplas import carregar_ou_inicializar_triplas, incrementar_triplas
 
 PATH_JSON_SAIDA = os.path.join(os.path.dirname(__file__), "relatorio_auditoria.json")
+LOCK_LOG = threading.Lock()
 
 
 def construir_grafo_compliance(novas_triplas_para_incrementar=None):
@@ -59,7 +62,7 @@ def construir_grafo_compliance(novas_triplas_para_incrementar=None):
     return g, triplas
 
 
-# Definição dos Tópicos de Auditoria de Compliance
+# Definição dos 10 Tópicos Principais de Auditoria de Compliance
 TOPICOS_AUDITORIA = [
     {
         "id": "AUD-001",
@@ -124,6 +127,22 @@ TOPICOS_AUDITORIA = [
         "ancoras_grafo": ["LGPD_Art_48_Notificacao_Incidentes", "ISO_27002_Controle_16_Gestao_Incidentes"],
         "palavras_chave": ["vazamento", "incidente", "notificação", "anpd", "violação de dados", "comunicação aos titulares"],
         "normas": "LGPD Art. 48 § 1º; ABNT NBR ISO/IEC 27002 Controle 16.1"
+    },
+    {
+        "id": "AUD-009",
+        "titulo": "Política de Retenção, Término do Tratamento e Descarte de Dados",
+        "categoria": "Ciclo de Vida do Dado (LGPD Art. 15 e 16 / ISO 27002 A.8.3)",
+        "ancoras_grafo": ["LGPD_Art_15_16_Retencao_Eliminacao", "ISO_27002_Controle_8_Retencao"],
+        "palavras_chave": ["retenção", "armazenamento", "descarte", "eliminação", "término do tratamento", "exclusão de conta"],
+        "normas": "LGPD Art. 15 e 16; ABNT NBR ISO/IEC 27002 Controle 8.3"
+    },
+    {
+        "id": "AUD-010",
+        "titulo": "Proteção de Dados Pessoais Sensíveis e de Crianças/Adolescentes",
+        "categoria": "Tratamento Especial (LGPD Art. 11 e 14 / ISO 27002 A.8.2)",
+        "ancoras_grafo": ["LGPD_Art_11_14_Dados_Sensives_Menores", "ISO_27002_Controle_8_Classificacao"],
+        "palavras_chave": ["dados sensíveis", "biometria", "saúde", "crianças", "adolescentes", "menores", "responsável legal"],
+        "normas": "LGPD Art. 11 e Art. 14; ABNT NBR ISO/IEC 27002 Controle 8.2"
     }
 ]
 
@@ -144,7 +163,6 @@ def buscar_paragrafos_relevantes(dados_sites: list, palavras_chave: list) -> lis
 def auditar_topico_com_graphrag(cliente, g, topico, paragrafos_evidencia, provedor="ollama", modelo_local="gemma4:12b"):
     """Realiza a auditoria de um tópico usando o Grafo de Conhecimento e o Provedor de IA selecionado."""
     
-    # 1. Recupera Subgrafo no Raio k=2 das Âncoras do Tópico
     nos_subgrafo = set()
     g_und = g.to_undirected()
     for anc in topico["ancoras_grafo"]:
@@ -153,13 +171,11 @@ def auditar_topico_com_graphrag(cliente, g, topico, paragrafos_evidencia, proved
             
     subgrafo = g.subgraph(nos_subgrafo) if nos_subgrafo else g
     
-    # 2. Serializa as regras do Subgrafo
     regras_linhas = []
     for u, v, d in subgrafo.edges(data=True):
         regras_linhas.append(f"- REGRA NORMATIVA: ({u}) -[{d.get('relacao')}]-> ({v}) [Fonte: {d.get('fonte', 'Norma')}]")
     regras_texto = "\n".join(regras_linhas) if regras_linhas else f"- Requisito base: {topico['normas']}"
     
-    # 3. Formata Evidências Encontradas no Site com Rastreabilidade
     if paragrafos_evidencia:
         evidencias_texto = "\n".join([
             f"* [{p['url']} | Linha {p['linha']}] (Tag: {p['tag']}): \"{p['texto']}\""
@@ -168,7 +184,6 @@ def auditar_topico_com_graphrag(cliente, g, topico, paragrafos_evidencia, proved
     else:
         evidencias_texto = "Nenhuma menção explícita ou evidência direta encontrada nos textos analisados do site."
         
-    # 4. Avaliação com IA (Ollama Local, Gemini API ou Fallback)
     if provedor != "heuristico":
         prompt = f"""Você é um auditor sênior de Compliance especialista em LGPD, ISO/IEC 27001, ISO/IEC 27002 e ISO 31000.
 
@@ -219,7 +234,6 @@ Responda APENAS em formato JSON com a seguinte estrutura estrita:
                     "explicacao_fundamentacao": dados_json.get("explicacao_fundamentacao", "Análise realizada com base nas regras do subgrafo de compliance.")
                 }
 
-    # Fallback Heurístico (quando sem IA ou se falhar)
     status_fall = "CONFORME" if paragrafos_evidencia else "NAO_CONFORME"
     if paragrafos_evidencia:
         trecho_fall = f"[{paragrafos_evidencia[0]['url']} | Linha {paragrafos_evidencia[0]['linha']}] \"{paragrafos_evidencia[0]['texto']}\""
@@ -239,13 +253,28 @@ Responda APENAS em formato JSON com a seguinte estrutura estrita:
     }
 
 
-def executar_auditoria_completa(urls: list, novas_triplas=None, provedor="ollama", modelo_local="gemma4:12b", progress_callback=None):
-    """Executa a auditoria completa GraphRAG para uma lista de URLs com barras de progresso (Console tqdm e Web Streamlit)."""
+def _trabalhador_auditoria(args):
+    """Função trabalhadora thread-safe para execução paralela."""
+    idx, topico, cliente, g, dados_sites, provedor, modelo_local = args
+    paragrafos_ev = buscar_paragrafos_relevantes(dados_sites, topico["palavras_chave"])
+    resultado_item = auditar_topico_com_graphrag(
+        cliente, g, topico, paragrafos_ev, 
+        provedor=provedor, modelo_local=modelo_local
+    )
+    return idx, topico, resultado_item
+
+
+def executar_auditoria_completa(urls: list, novas_triplas=None, provedor="ollama", modelo_local="gemma4:12b", progress_callback=None, max_workers=2):
+    """Executa a auditoria completa GraphRAG para os 10 tópicos com opção de paralelização (N trabalhadores simultâneos)."""
+    
+    # Se for Gemini API (cloud), força 1 trabalhador sequencial para não estourar rate-limit 429 da API
+    if provedor.lower() == "gemini":
+        max_workers = 1
+
     print("=" * 80)
-    print(f" INICIANDO PIPELINE DE AUDITORIA DE COMPLIANCE GRAPHRAG (Provedor: {provedor.upper()})")
+    print(f" INICIANDO PIPELINE DE AUDITORIA GRAPHRAG - 10 TÓPICOS (Provedor: {provedor.upper()} | Paralelização: {max_workers} por vez)")
     print("=" * 80)
     
-    # 1. Prepara Cliente Gemini (se o provedor selecionado for Gemini)
     cliente = None
     if provedor.lower() == "gemini":
         if obter_api_key():
@@ -257,55 +286,62 @@ def executar_auditoria_completa(urls: list, novas_triplas=None, provedor="ollama
         else:
             print(" -> [Aviso] Nenhuma chave GEMINI_API_KEY detectada para a API Gemini.")
     elif provedor.lower() == "ollama":
-        print(f" -> Conectando ao Ollama Local no modelo '{modelo_local}' (sem limites de API).")
+        print(f" -> Conectando ao Ollama Local no modelo '{modelo_local}' (paralelizado em {max_workers} requisições simultâneas).")
 
-    # 2. Consulta o triplas.json e constrói o Grafo
     g, triplas_carregadas = construir_grafo_compliance(novas_triplas_para_incrementar=novas_triplas)
     print(f" -> Grafo de Conhecimento de Compliance pronto: {g.number_of_nodes()} nós, {g.number_of_edges()} arestas (baseado em triplas.json).")
     
-    # 3. Realiza Scraping das URLs
     dados_sites = raspar_multiplas_urls(urls)
     urls_com_sucesso = [s["url"] for s in dados_sites if s["sucesso"]]
     
     if not urls_com_sucesso:
         print("\n[ERRO CRÍTICO] Nenhuma URL pôde ser raspada com sucesso.")
         
-    # 4. Executa Auditoria por Tópico com Barra de Progresso (tqdm no console & callback na Web)
-    itens_fundamentacao = []
-    totais = {"CONFORME": 0, "NAO_CONFORME": 0, "ATENCAO": 0}
     total_topicos = len(TOPICOS_AUDITORIA)
+    totais = {"CONFORME": 0, "NAO_CONFORME": 0, "ATENCAO": 0}
+    resultados_ordenados = [None] * total_topicos
+    concluidos_count = 0
     
-    # Barra de progresso tqdm no console
-    pbar = tqdm(TOPICOS_AUDITORIA, desc="Auditando Requisitos", unit="requisito", file=sys.stdout)
+    pbar = tqdm(total=total_topicos, desc="Auditando Requisitos (Paralelo)", unit="requisito", file=sys.stdout)
     
-    for i, topico in enumerate(pbar, start=1):
-        msg_progresso = f"[{i}/{total_topicos}] Auditando ({topico['id']}): {topico['titulo']}..."
-        pbar.set_postfix({"id": topico["id"], "provedor": provedor})
+    # Prepara lista de tarefas com índice explícito para garantir ordenação perfeita sem misturar
+    tarefas = [
+        (i, topico, cliente, g, dados_sites, provedor, modelo_local)
+        for i, topico in enumerate(TOPICOS_AUDITORIA)
+    ]
+    
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {executor.submit(_trabalhador_auditoria, t): t[0] for t in tarefas}
         
-        # Notifica o callback visual da Web (Streamlit) se fornecido
-        if progress_callback:
-            progress_callback(i, total_topicos, msg_progresso)
+        for future in as_completed(futures):
+            idx, topico, resultado_item = future.result()
+            resultados_ordenados[idx] = resultado_item
             
-        paragrafos_ev = buscar_paragrafos_relevantes(dados_sites, topico["palavras_chave"])
-        resultado_item = auditar_topico_com_graphrag(
-            cliente, g, topico, paragrafos_ev, 
-            provedor=provedor, modelo_local=modelo_local
-        )
-        
-        st = resultado_item["status"]
-        totais[st] = totais.get(st, 0) + 1
-        itens_fundamentacao.append(resultado_item)
+            st = resultado_item["status"]
+            totais[st] = totais.get(st, 0) + 1
+            concluidos_count += 1
+            
+            pbar.update(1)
+            msg_progresso = f"[{concluidos_count}/{total_topicos}] Concluído ({topico['id']}): {topico['titulo']} [{st}]"
+            
+            with LOCK_LOG:
+                pbar.set_postfix({"último": topico["id"], "status": st, "paralelo": max_workers})
+                if progress_callback:
+                    progress_callback(concluidos_count, total_topicos, msg_progresso)
 
-    # 5. Monta o JSON Estruturado Final
+    pbar.close()
+    itens_fundamentacao = [r for r in resultados_ordenados if r is not None]
+
     total_itens = len(itens_fundamentacao)
     porcentagem_conforme = round((totais["CONFORME"] / total_itens) * 100, 1) if total_itens > 0 else 0
     
     relatorio_json = {
-        "titulo": "Relatório de Auditoria de Compliance LGPD, ISO 27001, ISO 27002 & ISO 31000",
+        "titulo": "Relatório de Auditoria de Compliance LGPD, ISO 27001, ISO 27002 & ISO 31000 (10 Tópicos)",
         "metadata": {
             "data_auditoria": "2026-07-27",
             "urls_analisadas": urls,
             "provedor_ia": f"{provedor.upper()} ({modelo_local if provedor.lower() == 'ollama' else MODELO_GERACAO})",
+            "paralelizacao_trabalhadores": max_workers,
             "normas_base": ["LGPD (Lei 13.709/2018)", "ABNT NBR ISO/IEC 27001", "ABNT NBR ISO/IEC 27002", "ABNT NBR ISO 31000", "TPRM Framework"],
             "total_requisitos_auditados": total_itens,
             "total_triplas_grafo": len(triplas_carregadas),
@@ -315,14 +351,14 @@ def executar_auditoria_completa(urls: list, novas_triplas=None, provedor="ollama
         "introducao": (
             "Este relatório apresenta o resultado da avaliação automatizada de conformidade legal e regulatória "
             f"das páginas web analisadas ({', '.join(urls)}). A análise utiliza a metodologia GraphRAG (Retrieval-Augmented Generation em Grafo), "
-            f"executada via motor de IA {provedor.upper()} ({modelo_local if provedor.lower() == 'ollama' else MODELO_GERACAO}), "
+            f"executada via motor de IA {provedor.upper()} ({modelo_local if provedor.lower() == 'ollama' else MODELO_GERACAO}) paralelizado em {max_workers} processos simultâneos, "
             "correlacionando os textos das políticas públicas da plataforma com a Base de Conhecimento (triplas.json) formada pelos diplomas legais da LGPD, "
             "as normas ABNT NBR ISO/IEC 27001, 27002, 31000 e frameworks de Gestão de Riscos de Terceiros (TPRM). Cada ponto auditado possui "
             "rastreabilidade direta aos trechos e linhas do site, permitindo verificação imediata."
         ),
         "fundamentacao": itens_fundamentacao,
         "conclusao": (
-            f"A análise automatizada de compliance resultou em um índice global de conformidade de {porcentagem_conforme}%. "
+            f"A análise automatizada de compliance de 10 tópicos críticos resultou em um índice global de conformidade de {porcentagem_conforme}%. "
             f"Foram identificados {totais['CONFORME']} pontos em conformidade, {totais['ATENCAO']} pontos que exigem atenção/ajuste, "
             f"e {totais['NAO_CONFORME']} vulnerabilidades críticas de não conformidade com a LGPD e ISOs. "
             "A adequação dos pontos apontados como não conformes é indispensável para elidir riscos de sanções administrativas da ANPD (Art. 52 da LGPD) "
@@ -333,11 +369,12 @@ def executar_auditoria_completa(urls: list, novas_triplas=None, provedor="ollama
             "2. Atualizar os Termos de Uso e Política de Privacidade para incluir a Razão Social completa e o número de inscrição no CNPJ do controlador de dados (LGPD Art. 5º VI, Art. 6º VI).",
             "3. Implementar um canal direto e procedimento claro com prazo de até 15 dias para que os titulares exercem seus direitos previstos no Art. 18 da LGPD.",
             "4. Estabelecer um banner interativo de Cookies com opção clara de Opt-Out (recusa) e gestão de preferências de rastreamento.",
-            "5. Formalizar um Plano de Resposta a Incidentes de Segurança da Informação (SIRT) conforme ISO 27002 Controle 16.1 e LGPD Art. 48."
+            "5. Formalizar um Plano de Resposta a Incidentes de Segurança da Informação (SIRT) conforme ISO 27002 Controle 16.1 e LGPD Art. 48.",
+            "6. Definir e publicar regras claras de retenção, armazenamento e descarte/eliminação de dados pessoais após o término do tratamento (LGPD Art. 15 e 16).",
+            "7. Coletar consentimento específico e destacado para tratamento de dados pessoais sensíveis ou de menores (LGPD Art. 11 e 14)."
         ]
     }
     
-    # Salva o arquivo JSON
     with open(PATH_JSON_SAIDA, "w", encoding="utf-8") as f:
         json.dump(relatorio_json, f, ensure_ascii=False, indent=2)
         
@@ -351,4 +388,4 @@ if __name__ == "__main__":
         "https://www.vizinhub.com.br/privacy",
         "https://www.vizinhub.com.br/terms"
     ]
-    executar_auditoria_completa(sample_urls, provedor="ollama", modelo_local="gemma4:12b")
+    executar_auditoria_completa(sample_urls, provedor="ollama", modelo_local="gemma4:12b", max_workers=2)

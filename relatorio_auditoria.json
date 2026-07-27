@@ -1,12 +1,12 @@
 {
-  "titulo": "Relatório de Auditoria de Compliance LGPD, ISO 27001, ISO 27002 & ISO 31000",
+  "titulo": "Relatório de Auditoria de Compliance LGPD, ISO 27001, ISO 27002 & ISO 31000 (10 Tópicos)",
   "metadata": {
     "data_auditoria": "2026-07-27",
     "urls_analisadas": [
-      "https://www.vizinhub.com.br/privacy",
       "https://www.vizinhub.com.br/terms"
     ],
-    "provedor_ia": "OLLAMA (gemma4:12b)",
+    "provedor_ia": "HEURISTICO (gemini-2.0-flash)",
+    "paralelizacao_trabalhadores": 2,
     "normas_base": [
       "LGPD (Lei 13.709/2018)",
       "ABNT NBR ISO/IEC 27001",
@@ -14,96 +14,116 @@
       "ABNT NBR ISO 31000",
       "TPRM Framework"
     ],
-    "total_requisitos_auditados": 8,
-    "total_triplas_grafo": 23,
+    "total_requisitos_auditados": 10,
+    "total_triplas_grafo": 29,
     "resumo_status": {
-      "CONFORME": 4,
-      "NAO_CONFORME": 2,
-      "ATENCAO": 2
+      "CONFORME": 6,
+      "NAO_CONFORME": 4,
+      "ATENCAO": 0
     },
-    "indice_conformidade": "50.0%"
+    "indice_conformidade": "60.0%"
   },
-  "introducao": "Este relatório apresenta o resultado da avaliação automatizada de conformidade legal e regulatória das páginas web analisadas (https://www.vizinhub.com.br/privacy, https://www.vizinhub.com.br/terms). A análise utiliza a metodologia GraphRAG (Retrieval-Augmented Generation em Grafo), executada via motor de IA OLLAMA (gemma4:12b), correlacionando os textos das políticas públicas da plataforma com a Base de Conhecimento (triplas.json) formada pelos diplomas legais da LGPD, as normas ABNT NBR ISO/IEC 27001, 27002, 31000 e frameworks de Gestão de Riscos de Terceiros (TPRM). Cada ponto auditado possui rastreabilidade direta aos trechos e linhas do site, permitindo verificação imediata.",
+  "introducao": "Este relatório apresenta o resultado da avaliação automatizada de conformidade legal e regulatória das páginas web analisadas (https://www.vizinhub.com.br/terms). A análise utiliza a metodologia GraphRAG (Retrieval-Augmented Generation em Grafo), executada via motor de IA HEURISTICO (gemini-2.0-flash) paralelizado em 2 processos simultâneos, correlacionando os textos das políticas públicas da plataforma com a Base de Conhecimento (triplas.json) formada pelos diplomas legais da LGPD, as normas ABNT NBR ISO/IEC 27001, 27002, 31000 e frameworks de Gestão de Riscos de Terceiros (TPRM). Cada ponto auditado possui rastreabilidade direta aos trechos e linhas do site, permitindo verificação imediata.",
   "fundamentacao": [
     {
       "item_id": "AUD-001",
       "titulo_item": "Identificação do Controlador, Razão Social e CNPJ",
       "categoria": "Transparência & Governança (LGPD)",
       "status": "CONFORME",
-      "trecho_site_evidencia": "[https://www.vizinhub.com.br/privacy | Linha 5] 'O Vizin Hub e operado por FLAVIO MESQUITA MARINHO FILHO , CNPJ 54.569.183/0001-90' e [https://www.vizinhub.com.br/terms | Linha 1] 'O Vizin Hub e operado por FLAVIO MESQUITA MARINHO FILHO , CNPJ 54.569.183/0001-90'.",
+      "trecho_site_evidencia": "[https://www.vizinhub.com.br/terms | Linha 1] \"O Vizin Hub e operado por FLAVIO MESQUITA MARINHO FILHO , CNPJ 54.569.183/0001-90 . Estes termos entram em vigor em 04 de maio de 2026 e foram atualizados em 04 de maio de 2026 .\"",
       "norma_referencia": "LGPD Art. 5º VI; LGPD Art. 6º VI (Princípio da Transparência)",
-      "explicacao_fundamentacao": "O site cumpre integralmente o requisito AUD-001. A identificação do Controlador está explícita em duas áreas críticas: na Política de Privacidade e nos Termos de Uso. Foram fornecidos tanto a Razão Social quanto o CNPJ, atendendo ao Princípio da Transparência (Art. 6º, VI) e à exigência de identificação clara do controlador no âmbito da LGPD. A redundância da informação em ambos os documentos reforça a governança e a transparência perante o titular dos dados."
+      "explicacao_fundamentacao": "Foram identificadas evidências de atendimento ao requisito em 2 trechos do site auditado. O texto aborda os elementos da norma."
     },
     {
       "item_id": "AUD-002",
       "titulo_item": "Bases Legais, Consentimento e Especificação da Finalidade",
       "categoria": "Tratamento de Dados (LGPD)",
       "status": "CONFORME",
-      "trecho_site_evidencia": "Linha 32: 'Tratamos dados com base em hipoteses previstas na Lei Geral de Proteção de Dados (LGPD) e demais normas aplicaveis, incluindo execucao de contrato, cumprimento de obrigacao legal, exercicio regular de direitos, protecao ao credito, interesse legitimo, prevencao a fraude e consentimento quando exigido.' Além disso, as linhas 21 e 27 especificam finalidades como 'manter sessao', 'preferencias' e 'notificacoes push'.",
+      "trecho_site_evidencia": "[https://www.vizinhub.com.br/terms | Linha 46] \"O tratamento de dados pessoais segue a Politica de Privacidade, a Politica de Cookies e a legislacao aplicavel. Algumas funcionalidades podem depender de consentimento ou permissao do navegador, sistema operacional ou loja do aplicativo.\"",
       "norma_referencia": "LGPD Art. 6º I e II; LGPD Art. 7º I e V",
-      "explicacao_fundamentacao": "O site demonstra conformidade com o requisito AUD-002 ao atender simultaneamente aos princípios de Finalidade (Art. 6, I) e Adequação ao fim (Art. 6, II), pois detalha as finalidades específicas do processamento em diversos pontos (ex: segurança, funcionalidade e notificações). Quanto às Bases Legais (Art. 7º), a organização elenca explicitamente as justificativas jurídicas para o tratamento de dados (execução de contrato, obrigação legal, legítimo interesse, entre outros), atendendo ao requisito de transparência sobre por que os dados estão sendo processados. A menção à revogação de consentimento (Linhas 33 e 51) reforça a conformidade com o ciclo de vida do consentimento quando este for a base escolhida."
+      "explicacao_fundamentacao": "Foram identificadas evidências de atendimento ao requisito em 1 trechos do site auditado. O texto aborda os elementos da norma."
     },
     {
       "item_id": "AUD-003",
       "titulo_item": "Direitos dos Titulares e Canal de Atendimento de Requisições",
       "categoria": "Direitos do Titular (LGPD / ISO 27001)",
       "status": "CONFORME",
-      "trecho_site_evidencia": "[https://www.vizinhub.com.br/privacy | Linha 12] \"Dados de uso e navegacao, como paginas acessadas, interacoes, origem de acesso, registros tecnicos, endereco IP, dispositivo e navegador.\"",
+      "trecho_site_evidencia": "[https://www.vizinhub.com.br/terms | Linha 14] \"3 . Cadastro, idade e acesso\"",
       "norma_referencia": "LGPD Art. 18; LGPD Art. 19 (Prazo 15 dias)",
-      "explicacao_fundamentacao": "Foram identificadas evidências de atendimento ao requisito em 11 trechos do site auditado. O texto aborda os elementos da norma."
+      "explicacao_fundamentacao": "Foram identificadas evidências de atendimento ao requisito em 4 trechos do site auditado. O texto aborda os elementos da norma."
     },
     {
       "item_id": "AUD-004",
       "titulo_item": "Indicação Pública do Encarregado pelo Tratamento de Dados (DPO)",
       "categoria": "Governança & DPO (LGPD Art. 41)",
       "status": "NAO_CONFORME",
-      "trecho_site_evidencia": "Nenhuma menção explícita ou evidência direta encontrada nos textos analisados do site.",
+      "trecho_site_evidencia": "Ausência de texto ou cláusula no site indicando atendimento ao requisito.",
       "norma_referencia": "LGPD Art. 41 § 1º (Obrigação de divulgação pública do DPO)",
-      "explicacao_fundamentacao": "O tratamento de dados pelo controlador e operador exige a indicação clara e pública dos meios de contato do Encarregado pelo Tratamento de Dados (DPO), conforme o Art. 41, § 1º da LGPD. Como não foi identificada qualquer menção ao DPO ou canal de comunicação específico para este fim nas evidências coletadas, a organização está em descumprimento com o dever de transparência e governança exigido pela legislação brasileira. Sob a ótica das normas ISO/IEC 27001 e 27002 (Controle de Segurança da Informação), a ausência dessa identificação prejudica a capacidade de resposta a incidentes e a comunicação direta com os titulares, comprometendo a conformidade do programa de governança de privacidade."
+      "explicacao_fundamentacao": "Não foram encontradas evidências explícitas nas páginas analisadas para o requisito 'Indicação Pública do Encarregado pelo Tratamento de Dados (DPO)'. A ausência configura inconformidade frente à LGPD Art. 41 § 1º (Obrigação de divulgação pública do DPO)."
     },
     {
       "item_id": "AUD-005",
       "titulo_item": "Medidas de Segurança, Criptografia e Proteção de Dados",
       "categoria": "Segurança da Informação (LGPD Art. 46 / ISO 27002 A.10 & A.12)",
-      "status": "ATENCAO",
-      "trecho_site_evidencia": "[https://www.vizinhub.com.br/privacy | Linha 42] '7. Retenção e proteção' e [https://www.vizinhub.com.br/terms | Linha 55] '10 . Segurança, disponibilidade e limitação de responsabilidade'",
+      "status": "CONFORME",
+      "trecho_site_evidencia": "[https://www.vizinhub.com.br/terms | Linha 52] \"9 . Propriedade intelectual e proteção da marca\"",
       "norma_referencia": "LGPD Art. 46; ABNT NBR ISO/IEC 27002 Controles 10.1 e 12.4",
-      "explicacao_fundamentacao": "O site apresenta seções dedicadas a 'Retenção' e 'Segurança', o que indica a existência de políticas internas sobre esses temas. No entanto, para conformidade plena com o LGPD Art. 46 e os controles ISO 27002 (10.1 e 12.4), a evidência deve ser clara quanto às medidas técnicas específicas: a menção genérica a 'proteção' não confirma explicitamente a utilização de protocolos de criptografia para dados em trânsito (como TLS/SSL) nem detalha mecanismos de proteção contra malware ou políticas de retenção de logs. O texto atual é insuficiente para confirmar que as salvaguardas técnicas obrigatórias foram implementadas e documentadas de forma clara."
+      "explicacao_fundamentacao": "Foram identificadas evidências de atendimento ao requisito em 2 trechos do site auditado. O texto aborda os elementos da norma."
     },
     {
       "item_id": "AUD-006",
       "titulo_item": "Compartilhamento de Dados com Terceiros e Transferência Internacional",
       "categoria": "Gestão de Terceiros & TPRM (LGPD Art. 33 / ISO 27002 A.15)",
       "status": "CONFORME",
-      "trecho_site_evidencia": "O Vizin Hub pode compartilhar dados com terceiros estritamente necessarios para operar o servico, como: Processadores de pagamento, bancos, adquirentes, antifraude e parceiros de assinatura. [privacy | Linha 35-38]; ...buscamos exigir compromisso contratual com seguranca, confidencialidade e finalidade compativel. [privacy | Linha 41]",
+      "trecho_site_evidencia": "[https://www.vizinhub.com.br/terms | Linha 16] \"Nao e permitido criar conta com identidade falsa, dados de terceiros sem autorizacao ou informacoes deliberadamente incorretas.\"",
       "norma_referencia": "LGPD Art. 33 e 34; ABNT NBR ISO/IEC 27002 Controle 15.1; ISO 31000",
-      "explicacao_fundamentacao": "O site demonstra conformidade com o requisito AUD-006 ao atender a três pilares fundamentais: 1) Transparência e Finalidade (LGPD Art. 33/34): O texto delimita que o compartilhamento ocorre apenas para fins estritamente necessários à operação, listando categorias específicas de parceiros (pagamentos, segurança, etc.); 2) Gestão de Terceiros (ISO 27002 Controle 15.1): A empresa declara explicitamente a existência de mecanismos contratuais que obrigam os terceiros a respeitarem critérios de segurança e confidencialidade; 3) Mitigação de Riscos (ISO 31000/TPRM): A menção à exigência de 'finalidade compatível' indica um processo de governança para garantir que o dado não seja desviado para usos não autorizados por parceiros. Embora não detalhe mecanismos específicos de transferência internacional, a cláusula de compromisso contratual e finalidade cobre os requisitos de proteção em compartilhamentos com terceiros."
+      "explicacao_fundamentacao": "Foram identificadas evidências de atendimento ao requisito em 9 trechos do site auditado. O texto aborda os elementos da norma."
     },
     {
       "item_id": "AUD-007",
       "titulo_item": "Gestão de Cookies, Tecnologias de Rastreamento e Opt-Out",
       "categoria": "Privacidade Digital & Consentimento (LGPD)",
-      "status": "ATENCAO",
-      "trecho_site_evidencia": "[https://www.vizinhub.com.br/privacy | Linha 16] \"O usuario pode permitir, negar ou revogar essas permissoes nas configuracoes do dispositivo.\" e [https://www.vizinhub.com.br/privacy | Linha 57] \"Alguns parceiros, inclusive de publicidade, podem usar identificadores proprios de acordo com suas politicas.\"",
+      "status": "CONFORME",
+      "trecho_site_evidencia": "[https://www.vizinhub.com.br/terms | Linha 4] \"O uso do Vizin Hub depende da leitura e aceitacao destes Termos de Uso, da Politica de Privacidade e da Politica de Cookies. Caso o usuario nao concorde com qualquer ponto, deve interromper o uso da plataforma.\"",
       "norma_referencia": "LGPD Art. 8º § 5º (Facilidade de Revogação); LGPD Art. 18 IX",
-      "explicacao_fundamentacao": "O site apresenta uma conformidade parcial quanto ao requisito AUD-007. A menção na Linha 16 indica que o usuário possui a faculdade de revogar permissões, atendendo à exigência básica do Art. 8º § 5º da LGPD e do direito de revogação (Art. 18). Contudo, o status é 'ATENCAO' porque o texto remete a 'configurações do dispositivo' como método principal de revogação. Para uma conformidade plena com o princípio da facilidade e transparência nas normas ISO/IEC 27001/27002, seria recomendável que a plataforma oferecesse um mecanismo direto (ex: painel de preferências de cookies ou link de opt-out explícito), em vez de depender exclusivamente das configurações técnicas do navegador ou sistema operacional, garantindo assim que o exercício do direito do titular seja simples e imediato."
+      "explicacao_fundamentacao": "Foram identificadas evidências de atendimento ao requisito em 5 trechos do site auditado. O texto aborda os elementos da norma."
     },
     {
       "item_id": "AUD-008",
       "titulo_item": "Notificação e Protocolo de Resposta a Incidentes de Segurança",
       "categoria": "Gestão de Incidentes (LGPD Art. 48 / ISO 27002 A.16)",
       "status": "NAO_CONFORME",
-      "trecho_site_evidencia": "Nenhuma menção explícita ou evidência direta encontrada nos textos analisados do site.",
+      "trecho_site_evidencia": "Ausência de texto ou cláusula no site indicando atendimento ao requisito.",
       "norma_referencia": "LGPD Art. 48 § 1º; ABNT NBR ISO/IEC 27002 Controle 16.1",
-      "explicacao_fundamentacao": "O requisito AUD-008 exige que a organização possua e comunique procedimentos claros para a gestão de incidentes de segurança cibernética. A LGPD, em seu Art. 48, estabelece a obrigatoriedade de comunicar à autoridade nacional (ANPD) e aos titulares a ocorrência de incidentes de segurança que possam acarretar risco relevante. Como não foi encontrada qualquer menção ao protocolo de resposta, canais de comunicação ou procedimentos internos para lidar com vazamentos de dados no site, o requisito é classificado como NÃO_CONFORME. A ausência dessa informação impede a verificação da conformidade com a ISO/IEC 27002 (Controle 16), que exige processos estruturados para identificar, reportar e responder a incidentes de segurança da informação."
+      "explicacao_fundamentacao": "Não foram encontradas evidências explícitas nas páginas analisadas para o requisito 'Notificação e Protocolo de Resposta a Incidentes de Segurança'. A ausência configura inconformidade frente à LGPD Art. 48 § 1º; ABNT NBR ISO/IEC 27002 Controle 16.1."
+    },
+    {
+      "item_id": "AUD-009",
+      "titulo_item": "Política de Retenção, Término do Tratamento e Descarte de Dados",
+      "categoria": "Ciclo de Vida do Dado (LGPD Art. 15 e 16 / ISO 27002 A.8.3)",
+      "status": "NAO_CONFORME",
+      "trecho_site_evidencia": "Ausência de texto ou cláusula no site indicando atendimento ao requisito.",
+      "norma_referencia": "LGPD Art. 15 e 16; ABNT NBR ISO/IEC 27002 Controle 8.3",
+      "explicacao_fundamentacao": "Não foram encontradas evidências explícitas nas páginas analisadas para o requisito 'Política de Retenção, Término do Tratamento e Descarte de Dados'. A ausência configura inconformidade frente à LGPD Art. 15 e 16; ABNT NBR ISO/IEC 27002 Controle 8.3."
+    },
+    {
+      "item_id": "AUD-010",
+      "titulo_item": "Proteção de Dados Pessoais Sensíveis e de Crianças/Adolescentes",
+      "categoria": "Tratamento Especial (LGPD Art. 11 e 14 / ISO 27002 A.8.2)",
+      "status": "NAO_CONFORME",
+      "trecho_site_evidencia": "Ausência de texto ou cláusula no site indicando atendimento ao requisito.",
+      "norma_referencia": "LGPD Art. 11 e Art. 14; ABNT NBR ISO/IEC 27002 Controle 8.2",
+      "explicacao_fundamentacao": "Não foram encontradas evidências explícitas nas páginas analisadas para o requisito 'Proteção de Dados Pessoais Sensíveis e de Crianças/Adolescentes'. A ausência configura inconformidade frente à LGPD Art. 11 e Art. 14; ABNT NBR ISO/IEC 27002 Controle 8.2."
     }
   ],
-  "conclusao": "A análise automatizada de compliance resultou em um índice global de conformidade de 50.0%. Foram identificados 4 pontos em conformidade, 2 pontos que exigem atenção/ajuste, e 2 vulnerabilidades críticas de não conformidade com a LGPD e ISOs. A adequação dos pontos apontados como não conformes é indispensável para elidir riscos de sanções administrativas da ANPD (Art. 52 da LGPD) e garantir a integridade da segurança da informação conforme os padrões ISO/IEC 27001 e 27002.",
+  "conclusao": "A análise automatizada de compliance de 10 tópicos críticos resultou em um índice global de conformidade de 60.0%. Foram identificados 6 pontos em conformidade, 0 pontos que exigem atenção/ajuste, e 4 vulnerabilidades críticas de não conformidade com a LGPD e ISOs. A adequação dos pontos apontados como não conformes é indispensável para elidir riscos de sanções administrativas da ANPD (Art. 52 da LGPD) e garantir a integridade da segurança da informação conforme os padrões ISO/IEC 27001 e 27002.",
   "proximos_passos": [
     "1. Nomear e divulgar publicamente a identidade e canal de contato do Encarregado pelo Tratamento de Dados Pessoais (DPO) na Política de Privacidade (LGPD Art. 41).",
     "2. Atualizar os Termos de Uso e Política de Privacidade para incluir a Razão Social completa e o número de inscrição no CNPJ do controlador de dados (LGPD Art. 5º VI, Art. 6º VI).",
     "3. Implementar um canal direto e procedimento claro com prazo de até 15 dias para que os titulares exercem seus direitos previstos no Art. 18 da LGPD.",
     "4. Estabelecer um banner interativo de Cookies com opção clara de Opt-Out (recusa) e gestão de preferências de rastreamento.",
-    "5. Formalizar um Plano de Resposta a Incidentes de Segurança da Informação (SIRT) conforme ISO 27002 Controle 16.1 e LGPD Art. 48."
+    "5. Formalizar um Plano de Resposta a Incidentes de Segurança da Informação (SIRT) conforme ISO 27002 Controle 16.1 e LGPD Art. 48.",
+    "6. Definir e publicar regras claras de retenção, armazenamento e descarte/eliminação de dados pessoais após o término do tratamento (LGPD Art. 15 e 16).",
+    "7. Coletar consentimento específico e destacado para tratamento de dados pessoais sensíveis ou de menores (LGPD Art. 11 e 14)."
   ]
 }

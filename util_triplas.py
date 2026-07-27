@@ -45,7 +45,17 @@ TRIPLAS_BASE_INICIAIS = [
     # LGPD - Incidentes de Segurança
     {"origem": "LGPD", "relacao": "EXIGE", "destino": "LGPD_Art_48_Notificacao_Incidentes", "fonte": "LGPD Art. 48"},
     {"origem": "LGPD_Art_48_Notificacao_Incidentes", "relacao": "APLICA_CONTROLE", "destino": "ISO_27002_Controle_16_Gestao_Incidentes", "fonte": "ISO 27002 Seção 16"},
-    {"origem": "LGPD_Art_48_Notificacao_Incidentes", "relacao": "REQUER_EVIDENCIA", "destino": "Procedimento_Comunicacao_ANPD_Titulares", "fonte": "LGPD Art. 48 § 1º"}
+    {"origem": "LGPD_Art_48_Notificacao_Incidentes", "relacao": "REQUER_EVIDENCIA", "destino": "Procedimento_Comunicacao_ANPD_Titulares", "fonte": "LGPD Art. 48 § 1º"},
+
+    # LGPD - Retenção e Eliminação de Dados (AUD-009)
+    {"origem": "LGPD", "relacao": "REGULA", "destino": "LGPD_Art_15_16_Retencao_Eliminacao", "fonte": "LGPD Art. 15 e 16"},
+    {"origem": "LGPD_Art_15_16_Retencao_Eliminacao", "relacao": "APLICA_CONTROLE", "destino": "ISO_27002_Controle_8_Retencao", "fonte": "ISO 27002 Controle 8.3"},
+    {"origem": "LGPD_Art_15_16_Retencao_Eliminacao", "relacao": "REQUER_EVIDENCIA", "destino": "Politica_Prazo_Descarte_Eliminacao_Dados", "fonte": "LGPD Art. 16"},
+
+    # LGPD - Dados Sensíveis e Crianças/Adolescentes (AUD-010)
+    {"origem": "LGPD", "relacao": "PROTEGE", "destino": "LGPD_Art_11_14_Dados_Sensives_Menores", "fonte": "LGPD Art. 11 e 14"},
+    {"origem": "LGPD_Art_11_14_Dados_Sensives_Menores", "relacao": "APLICA_CONTROLE", "destino": "ISO_27002_Controle_8_Classificacao", "fonte": "ISO 27002 Controle 8.2"},
+    {"origem": "LGPD_Art_11_14_Dados_Sensives_Menores", "relacao": "REQUER_EVIDENCIA", "destino": "Consentimento_Destacado_Sensivel_Menor", "fonte": "LGPD Art. 11, I e Art. 14 § 1º"}
 ]
 
 
@@ -81,12 +91,14 @@ def carregar_ou_inicializar_triplas(caminho: str = PATH_TRIPLAS_JSON) -> list:
             with open(caminho, "r", encoding="utf-8") as f:
                 dados = json.load(f)
                 triplas = dados.get("triplas", [])
-                print(f" -> [triplas.json] Carregadas {len(triplas)} triplas do arquivo pré-existente.")
-                return deduplicar_triplas(triplas)
+                # Garante que novas triplas base também sejam mescladas se ausentes
+                combinadas = deduplicar_triplas(triplas + TRIPLAS_BASE_INICIAIS)
+                if len(combinadas) > len(triplas):
+                    salvar_triplas(combinadas, caminho)
+                return combinadas
         except Exception as e:
-            print(f" -> [Aviso] Falha ao ler {caminho} ({e}). Reinicializando base base de triplas.")
+            print(f" -> [Aviso] Falha ao ler {caminho} ({e}). Reinicializando base de triplas.")
             
-    # Se não existe, cria com as triplas base deduplicadas
     triplas_iniciais = deduplicar_triplas(TRIPLAS_BASE_INICIAIS)
     salvar_triplas(triplas_iniciais, caminho)
     return triplas_iniciais
@@ -99,7 +111,7 @@ def salvar_triplas(lista_triplas: list, caminho: str = PATH_TRIPLAS_JSON):
     estrutura = {
         "metadata": {
             "descricao": "Base de Triplas Deduplicadas do Grafo de Conhecimento de Compliance (LGPD, ISOs, TPRM)",
-            "versao": "1.0",
+            "versao": "1.1",
             "ultima_atualizacao": time.strftime("%Y-%m-%d %H:%M:%S"),
             "total_triplas": len(unicas)
         },
@@ -117,7 +129,6 @@ def incrementar_triplas(novas_triplas: list, caminho: str = PATH_TRIPLAS_JSON) -
     atuais = carregar_ou_inicializar_triplas(caminho)
     tamanho_antes = len(atuais)
     
-    # Combina e deduplica
     combinadas = atuais + novas_triplas
     deduplicadas = deduplicar_triplas(combinadas)
     
