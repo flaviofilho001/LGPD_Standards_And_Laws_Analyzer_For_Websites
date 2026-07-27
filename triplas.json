@@ -1,0 +1,148 @@
+{
+  "metadata": {
+    "descricao": "Base de Triplas Deduplicadas do Grafo de Conhecimento de Compliance (LGPD, ISOs, TPRM)",
+    "versao": "1.0",
+    "ultima_atualizacao": "2026-07-27 14:34:39",
+    "total_triplas": 23
+  },
+  "triplas": [
+    {
+      "origem": "LGPD",
+      "relacao": "EXIGE",
+      "destino": "LGPD_Art_41_DPO",
+      "fonte": "LGPD Art. 41"
+    },
+    {
+      "origem": "LGPD_Art_41_DPO",
+      "relacao": "REQUER_EVIDENCIA",
+      "destino": "Divulgação_Pública_Contato_DPO",
+      "fonte": "LGPD Art. 41 § 1º"
+    },
+    {
+      "origem": "LGPD",
+      "relacao": "EXIGE",
+      "destino": "LGPD_Art_5_Identificacao_Controlador",
+      "fonte": "LGPD Art. 5, VI"
+    },
+    {
+      "origem": "LGPD_Art_5_Identificacao_Controlador",
+      "relacao": "REQUER_EVIDENCIA",
+      "destino": "Razao_Social_e_CNPJ_Claros",
+      "fonte": "LGPD Art. 6, VI (Transparência)"
+    },
+    {
+      "origem": "LGPD",
+      "relacao": "EXIGE",
+      "destino": "LGPD_Art_7_Bases_Legais",
+      "fonte": "LGPD Art. 7"
+    },
+    {
+      "origem": "LGPD_Art_7_Bases_Legais",
+      "relacao": "DISPOE_SOBRE",
+      "destino": "Especificacao_Finalidade_Tratamento",
+      "fonte": "LGPD Art. 6, I"
+    },
+    {
+      "origem": "LGPD",
+      "relacao": "EXIGE",
+      "destino": "LGPD_Art_8_Revogacao_Consentimento",
+      "fonte": "LGPD Art. 8 § 5º"
+    },
+    {
+      "origem": "LGPD_Art_8_Revogacao_Consentimento",
+      "relacao": "REQUER_EVIDENCIA",
+      "destino": "Procedimento_Gratuito_Facil_OptOut",
+      "fonte": "LGPD Art. 8 § 4º e 5º"
+    },
+    {
+      "origem": "LGPD",
+      "relacao": "EXIGE",
+      "destino": "LGPD_Art_18_Direitos_Titular",
+      "fonte": "LGPD Art. 18"
+    },
+    {
+      "origem": "LGPD_Art_18_Direitos_Titular",
+      "relacao": "INCLUI_DIREITO",
+      "destino": "Acesso_Correcao_Eliminacao_Portabilidade",
+      "fonte": "LGPD Art. 18, I a IX"
+    },
+    {
+      "origem": "LGPD_Art_18_Direitos_Titular",
+      "relacao": "REQUER_EVIDENCIA",
+      "destino": "Canal_Atendimento_Solicitacoes_Titular",
+      "fonte": "LGPD Art. 19 (Prazo 15 dias)"
+    },
+    {
+      "origem": "LGPD",
+      "relacao": "EXIGE",
+      "destino": "LGPD_Art_46_Seguranca_Tecnica_Admin",
+      "fonte": "LGPD Art. 46"
+    },
+    {
+      "origem": "LGPD_Art_46_Seguranca_Tecnica_Admin",
+      "relacao": "APLICA_CONTROLE",
+      "destino": "ISO_27002_Controle_10_Criptografia",
+      "fonte": "ISO 27002 Seção 10"
+    },
+    {
+      "origem": "ISO_27002_Controle_10_Criptografia",
+      "relacao": "REQUER_EVIDENCIA",
+      "destino": "Cifragem_Dados_Transito_HTTPS_TLS",
+      "fonte": "ISO 27002 Controle 10.1"
+    },
+    {
+      "origem": "LGPD_Art_46_Seguranca_Tecnica_Admin",
+      "relacao": "APLICA_CONTROLE",
+      "destino": "ISO_27002_Controle_12_Backup_Logs",
+      "fonte": "ISO 27002 Seção 12"
+    },
+    {
+      "origem": "ISO_27002_Controle_12_Backup_Logs",
+      "relacao": "REQUER_EVIDENCIA",
+      "destino": "Retencao_Logs_e_Protecao_Malware",
+      "fonte": "ISO 27002 Controle 12.4"
+    },
+    {
+      "origem": "LGPD",
+      "relacao": "REGULA",
+      "destino": "LGPD_Art_33_Transferencia_Compartilhamento",
+      "fonte": "LGPD Art. 33 e 34"
+    },
+    {
+      "origem": "LGPD_Art_33_Transferencia_Compartilhamento",
+      "relacao": "APLICA_CONTROLE",
+      "destino": "ISO_27002_Controle_15_TPRM_Fornecedores",
+      "fonte": "ISO 27002 Seção 15"
+    },
+    {
+      "origem": "ISO_27002_Controle_15_TPRM_Fornecedores",
+      "relacao": "APLICA_CONTROLE",
+      "destino": "TPRM_Gestao_Riscos_Terceiros",
+      "fonte": "ISO 31000 & TPRM Framework"
+    },
+    {
+      "origem": "TPRM_Gestao_Riscos_Terceiros",
+      "relacao": "REQUER_EVIDENCIA",
+      "destino": "Clausulas_Contratuais_Compliance_Terceiros",
+      "fonte": "ISO 27002 Controle 15.1"
+    },
+    {
+      "origem": "LGPD",
+      "relacao": "EXIGE",
+      "destino": "LGPD_Art_48_Notificacao_Incidentes",
+      "fonte": "LGPD Art. 48"
+    },
+    {
+      "origem": "LGPD_Art_48_Notificacao_Incidentes",
+      "relacao": "APLICA_CONTROLE",
+      "destino": "ISO_27002_Controle_16_Gestao_Incidentes",
+      "fonte": "ISO 27002 Seção 16"
+    },
+    {
+      "origem": "LGPD_Art_48_Notificacao_Incidentes",
+      "relacao": "REQUER_EVIDENCIA",
+      "destino": "Procedimento_Comunicacao_ANPD_Titulares",
+      "fonte": "LGPD Art. 48 § 1º"
+    }
+  ]
+}

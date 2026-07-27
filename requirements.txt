@@ -1,0 +1,9 @@
+google-genai
+pypdf
+pymupdf
+beautifulsoup4
+requests
+networkx
+streamlit
+pandas
+urllib3
