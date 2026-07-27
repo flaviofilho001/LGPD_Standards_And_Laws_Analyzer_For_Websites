@@ -94,7 +94,7 @@ def carregar_json_relatorio():
 def main():
     # Header Principal
     st.markdown('<div class="main-header">🛡️ GraphRAG Compliance & Auditoria Suite</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Auditoria de Conformidade Legal com Opção de IA Local (Ollama - Sem Limites) ou Cloud (Gemini API)</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Auditoria de Conformidade Legal com Barra de Progresso em Tempo Real (Console & Web)</div>', unsafe_allow_html=True)
 
     # Sidebar - Configurações da Auditoria
     st.sidebar.image("https://img.icons8.com/isometric-folders/100/security-checked.png", width=70)
@@ -152,16 +152,25 @@ def main():
         if not urls_lista:
             st.error("Por favor, insira pelo menos uma URL válida.")
         else:
-            msg_spinner = f"⏳ Executando auditoria via {provedor_opcao}..."
-            with st.spinner(msg_spinner):
-                rel_json = executar_auditoria_completa(
-                    urls_lista, 
-                    provedor=provedor_cod, 
-                    modelo_local=modelo_local_sel
-                )
-                gerar_markdown_do_json(PATH_JSON, PATH_MD)
-                st.success("✅ Auditoria GraphRAG concluída com sucesso!")
-                st.rerun()
+            st.markdown("### ⏳ Processamento da Auditoria em Tempo Real")
+            st_progress_bar = st.progress(0, text="Iniciando raspagem e auditoria...")
+            st_status_box = st.status(f"🔍 Executando via {provedor_opcao}...", expanded=True)
+
+            def web_progress_callback(atual, total, mensagem):
+                pct = float(atual) / float(total)
+                st_progress_bar.progress(pct, text=f"Progresso: {int(pct * 100)}% — {mensagem}")
+                st_status_box.write(f"👉 {mensagem}")
+
+            rel_json = executar_auditoria_completa(
+                urls_lista, 
+                provedor=provedor_cod, 
+                modelo_local=modelo_local_sel,
+                progress_callback=web_progress_callback
+            )
+            gerar_markdown_do_json(PATH_JSON, PATH_MD)
+            st_status_box.update(label="✅ Auditoria GraphRAG concluída com sucesso!", state="complete")
+            st.success("✅ Relatório de Compliance gerado com sucesso!")
+            st.rerun()
 
     # Carrega dados do último relatório
     dados_relatorio = carregar_json_relatorio()

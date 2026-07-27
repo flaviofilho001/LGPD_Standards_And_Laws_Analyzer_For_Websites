@@ -2,7 +2,7 @@
 
 Constrói o Grafo de Conhecimento de Compliance (LGPD, ISO 27001, ISO 27002, ISO 31000, TPRM),
 submete dados raspados de sites a auditorias por subgrafos e gera relatorio_auditoria.json estruturado.
-Suporta execução via Ollama Local (Sem Limites) ou Gemini API.
+Suporta execução via Ollama Local (Sem Limites) ou Gemini API, com barras de progresso (Console tqdm & Streamlit Web).
 """
 
 import json
@@ -10,6 +10,7 @@ import os
 import re
 import sys
 import networkx as nx
+from tqdm import tqdm
 
 # Reconfigura o encoding do terminal Windows para UTF-8 de forma segura
 if hasattr(sys.stdout, "reconfigure"):
@@ -238,8 +239,8 @@ Responda APENAS em formato JSON com a seguinte estrutura estrita:
     }
 
 
-def executar_auditoria_completa(urls: list, novas_triplas=None, provedor="ollama", modelo_local="gemma4:12b"):
-    """Executa a auditoria completa GraphRAG para uma lista de URLs consultando triplas.json e usando o provedor de IA escolhido."""
+def executar_auditoria_completa(urls: list, novas_triplas=None, provedor="ollama", modelo_local="gemma4:12b", progress_callback=None):
+    """Executa a auditoria completa GraphRAG para uma lista de URLs com barras de progresso (Console tqdm e Web Streamlit)."""
     print("=" * 80)
     print(f" INICIANDO PIPELINE DE AUDITORIA DE COMPLIANCE GRAPHRAG (Provedor: {provedor.upper()})")
     print("=" * 80)
@@ -269,12 +270,22 @@ def executar_auditoria_completa(urls: list, novas_triplas=None, provedor="ollama
     if not urls_com_sucesso:
         print("\n[ERRO CRÍTICO] Nenhuma URL pôde ser raspada com sucesso.")
         
-    # 4. Executa Auditoria por Tópico
+    # 4. Executa Auditoria por Tópico com Barra de Progresso (tqdm no console & callback na Web)
     itens_fundamentacao = []
     totais = {"CONFORME": 0, "NAO_CONFORME": 0, "ATENCAO": 0}
+    total_topicos = len(TOPICOS_AUDITORIA)
     
-    for topico in TOPICOS_AUDITORIA:
-        print(f"\n[Auditoria {topico['id']}] {topico['titulo']}...")
+    # Barra de progresso tqdm no console
+    pbar = tqdm(TOPICOS_AUDITORIA, desc="Auditando Requisitos", unit="requisito", file=sys.stdout)
+    
+    for i, topico in enumerate(pbar, start=1):
+        msg_progresso = f"[{i}/{total_topicos}] Auditando ({topico['id']}): {topico['titulo']}..."
+        pbar.set_postfix({"id": topico["id"], "provedor": provedor})
+        
+        # Notifica o callback visual da Web (Streamlit) se fornecido
+        if progress_callback:
+            progress_callback(i, total_topicos, msg_progresso)
+            
         paragrafos_ev = buscar_paragrafos_relevantes(dados_sites, topico["palavras_chave"])
         resultado_item = auditar_topico_com_graphrag(
             cliente, g, topico, paragrafos_ev, 
@@ -283,7 +294,6 @@ def executar_auditoria_completa(urls: list, novas_triplas=None, provedor="ollama
         
         st = resultado_item["status"]
         totais[st] = totais.get(st, 0) + 1
-        print(f"  -> Status: [{st}] - Ref: {resultado_item['norma_referencia']}")
         itens_fundamentacao.append(resultado_item)
 
     # 5. Monta o JSON Estruturado Final
