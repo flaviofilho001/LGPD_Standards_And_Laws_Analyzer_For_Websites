@@ -1,5 +1,7 @@
 """Interface Visual Streamlit para a Suite de Auditoria GraphRAG (LGPD & ISOs).
 
+Desenvolvido por: Flávio Mesquita - Universidade Federal da Paraíba (UFPB) - Ciência da Computação
+
 Execução:
     python -m streamlit run app_ui.py
 """
@@ -35,7 +37,7 @@ DIR_TEXTOS = os.path.join(os.path.dirname(__file__), "extracted_texts")
 
 # Configuração da página Streamlit
 st.set_page_config(
-    page_title="GraphRAG Compliance Suite",
+    page_title="GraphRAG Compliance Suite | Flávio Mesquita - UFPB",
     page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -53,8 +55,19 @@ st.markdown("""
         margin-bottom: 0.2rem;
     }
     .sub-header {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
         color: #9CA3AF;
+        margin-bottom: 1.2rem;
+    }
+    .author-badge {
+        background: rgba(99, 102, 241, 0.15);
+        border: 1px solid rgba(99, 102, 241, 0.4);
+        color: #818CF8;
+        padding: 0.4rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-block;
         margin-bottom: 1.5rem;
     }
     .status-conforme {
@@ -93,9 +106,10 @@ def carregar_json_relatorio():
 
 
 def main():
-    # Header Principal
+    # Header Principal & Créditos do Autor
     st.markdown('<div class="main-header">🛡️ GraphRAG Compliance & Auditoria Suite</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Auditoria com Gerador de Triplas (IA / RDF / TTL) e Motor de Busca em Grafo</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Plataforma de Auditoria Automatizada de LGPD, ISO 27001/27002, ISO 31000 e Gestão de Riscos</div>', unsafe_allow_html=True)
+    st.markdown('<div class="author-badge">🎓 Desenvolvido por: <b>Flávio Mesquita</b> — Universidade Federal da Paraíba (UFPB) — Ciência da Computação</div>', unsafe_allow_html=True)
 
     # Sidebar - Configurações da Auditoria
     st.sidebar.image("https://img.icons8.com/isometric-folders/100/security-checked.png", width=70)
@@ -109,7 +123,7 @@ def main():
     )
     
     provedor_cod = "ollama" if "Ollama" in provedor_opcao else ("gemini" if "Gemini" in provedor_opcao else "heuristico")
-    modelo_local_sel = "gemma4:12b"
+    modelo_local_sel = "qwen3.5:2b"
     max_workers_sel = 2
     
     if provedor_cod == "ollama":
@@ -122,7 +136,7 @@ def main():
             )
             st.sidebar.success(f"🟢 Ollama ativo com {len(modelos_detectados)} modelo(s) local(is)!")
         else:
-            modelo_local_sel = st.sidebar.text_input("Nome do Modelo Ollama:", value="gemma4:12b")
+            modelo_local_sel = st.sidebar.text_input("Nome do Modelo Ollama:", value="qwen3.5:2b")
             st.sidebar.info("💡 Certifique-se de que o serviço do Ollama está rodando localmente na porta 11434.")
             
         max_workers_sel = st.sidebar.slider(
@@ -182,6 +196,11 @@ def main():
             st_status_box.update(label="✅ Auditoria de 10 Tópicos concluída com sucesso!", state="complete")
             st.success("✅ Relatório de Compliance de 10 Tópicos gerado com sucesso!")
             st.rerun()
+
+    # Sidebar Footer Credit
+    st.sidebar.divider()
+    st.sidebar.caption("👨‍💻 **Projeto por:** Flávio Mesquita")
+    st.sidebar.caption("🏛️ UFPB - Ciência da Computação")
 
     # Carrega dados do último relatório
     dados_relatorio = carregar_json_relatorio()

@@ -2,8 +2,8 @@
   "metadata": {
     "descricao": "Base de Triplas Deduplicadas do Grafo de Conhecimento de Compliance (LGPD, ISOs, TPRM)",
     "versao": "1.1",
-    "ultima_atualizacao": "2026-07-27 16:19:29",
-    "total_triplas": 42
+    "ultima_atualizacao": "2026-07-27 16:30:42",
+    "total_triplas": 51
   },
   "triplas": [
     {
@@ -257,6 +257,60 @@
       "relacao": "DEMANDA_Necessario",
       "destino": "Execucao_de_Contrato",
       "fonte": "LGPD_Art_8"
+    },
+    {
+      "origem": "Secao_5_7_2",
+      "relacao": "PROMOVE",
+      "destino": "Melhoria_Continua",
+      "fonte": "Secao 5.7.2"
+    },
+    {
+      "origem": "ISO_27005_2011",
+      "relacao": "REGULA",
+      "destino": "Gestao_de_Riscos_de_Seguranca_da_Informacao",
+      "fonte": "NBR ISO IEC 27005:2011"
+    },
+    {
+      "origem": "ISO_27005_2011",
+      "relacao": "FORNECE_DIRETRIZES",
+      "destino": "Processo_Gestao_Riscos_Seguranca_Informacao",
+      "fonte": "Norma 27005:2011"
+    },
+    {
+      "origem": "TPRM_Contexto",
+      "relacao": "ENVOLVE",
+      "destino": "Rede_de_Terceiros",
+      "fonte": "br-third-party-risk-management.pdf P1"
+    },
+    {
+      "origem": "TPRM_Contexto",
+      "relacao": "COMPREENDE",
+      "destino": "Intermediarios_Fornecedores_Distribuidores_Agentes_JointVentureS_Aliancas_Subcontratados_PrestadoresDeServicos",
+      "fonte": "-1"
+    },
+    {
+      "origem": "LGPD_Art_6",
+      "relacao": "DEVER_OBSERVAR",
+      "destino": "Principio_Boa_Fe",
+      "fonte": "LGPD Art. 6º"
+    },
+    {
+      "origem": "LGPD_Art_7",
+      "relacao": "PERMITE",
+      "destino": "Tratamento_Dados_Pessoais",
+      "fonte": "LGPD Art. 7º"
+    },
+    {
+      "origem": "LGPD_Art_7_Inciso_I",
+      "relacao": "EXIGE",
+      "destino": "Consentimento_Titular",
+      "fonte": "LGPD Art. 7º, I"
+    },
+    {
+      "origem": "LGPD_Art_7_Inciso_II",
+      "relacao": "EXIGE",
+      "destino": "Cumprimento_Obrigacao_Legal",
+      "fonte": "LGPD Art. 7º, II"
     }
   ]
 }
