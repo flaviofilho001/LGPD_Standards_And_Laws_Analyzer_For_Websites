@@ -5,6 +5,7 @@ import json
 import os
 import sys
 import time
+import re
 import requests
 
 # Reconfigura o encoding do terminal Windows para UTF-8 de forma segura
@@ -76,19 +77,28 @@ def listar_modelos_ollama_locais(host: str = OLLAMA_HOST) -> list:
     return []
 
 
-def chamar_ollama_local(prompt: str, modelo: str = "gemma4:12b", host: str = OLLAMA_HOST) -> str:
-    """Realiza uma chamada direta ao servidor Ollama local (sem limites de API)."""
+def chamar_ollama_local(prompt: str, modelo: str = "qwen3.5:2b", host: str = OLLAMA_HOST, exigi_json: bool = True) -> str:
+    """Realiza uma chamada direta ao servidor Ollama local (com suporte a modelos de raciocínio como qwen3.5:2b)."""
     url = f"{host}/api/generate"
     payload = {
         "model": modelo,
         "prompt": prompt,
         "stream": False
     }
+    if exigi_json:
+        payload["format"] = "json"
+
     try:
-        r = requests.post(url, json=payload, timeout=90)
+        r = requests.post(url, json=payload, timeout=180)
         r.raise_for_status()
         res_json = r.json()
-        return res_json.get("response", "")
+        
+        # Suporte a modelos normais e modelos de raciocínio/thinking (ex: qwen3.5:2b)
+        resposta_texto = res_json.get("response") or res_json.get("thinking") or ""
+        if not resposta_texto and isinstance(res_json.get("message"), dict):
+            resposta_texto = res_json["message"].get("content", "")
+            
+        return resposta_texto
     except Exception as e:
         print(f"  [Aviso Ollama Local] Falha ao comunicar com {modelo} em {host}: {e}")
         return ""
@@ -115,20 +125,17 @@ def chamar_api(func_ou_metodo, *args, **kwargs):
     return None
 
 
-def gerar_resposta_llm(prompt: str, provedor: str = "ollama", modelo_local: str = "gemma4:12b", cliente_gemini=None) -> str:
+def gerar_resposta_llm(prompt: str, provedor: str = "ollama", modelo_local: str = "qwen3.5:2b", cliente_gemini=None) -> str:
     """Interface unificada para geração de respostas por IA (Ollama Local ou Gemini API)."""
     provedor_clean = str(provedor).lower().strip()
     
     if provedor_clean == "ollama":
-        print(f"  [IA Local Ollama] Consultando modelo '{modelo_local}' sem limites de API...")
         resposta = chamar_ollama_local(prompt, modelo=modelo_local)
         if resposta:
             return resposta
-        print("  [Fallback] Tentando usar o cliente Gemini API...")
         provedor_clean = "gemini"
 
     if provedor_clean == "gemini" and cliente_gemini:
-        print(f"  [IA Cloud Gemini] Consultando Gemini API ({MODELO_GERACAO})...")
         res = chamar_api(cliente_gemini.models.generate_content, model=MODELO_GERACAO, contents=prompt)
         if res and hasattr(res, "text"):
             return res.text
@@ -152,16 +159,26 @@ def limpar_json_markdown(texto: str) -> str:
 
 
 def extrair_json_seguro(texto: str, default=None):
-    """Tenta converter uma resposta de LLM em JSON de forma segura."""
+    """Tenta converter uma resposta de LLM em JSON de forma extremamente robusta."""
     limpo = limpar_json_markdown(texto)
     try:
         return json.loads(limpo)
     except Exception:
-        start = limpo.find("{")
-        end = limpo.rfind("}")
-        if start != -1 and end != -1 and end > start:
-            try:
-                return json.loads(limpo[start:end+1])
-            except Exception:
-                pass
-        return default if default is not None else {}
+        pass
+        
+    match_obj = re.search(r'(\{[\s\S]*\})', texto)
+    if match_obj:
+        try:
+            return json.loads(match_obj.group(1))
+        except Exception:
+            pass
+            
+    match_arr = re.search(r'(\[[\s\S]*\])', texto)
+    if match_arr:
+        try:
+            arr = json.loads(match_arr.group(1))
+            return {"triplas": arr}
+        except Exception:
+            pass
+            
+    return default if default is not None else {}

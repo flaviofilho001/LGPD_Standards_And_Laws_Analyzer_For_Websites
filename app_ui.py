@@ -27,6 +27,7 @@ from json_to_markdown import gerar_markdown_do_json
 from util_pdf import processar_base_conhecimento
 from util_triplas import carregar_ou_inicializar_triplas, incrementar_triplas, PATH_TRIPLAS_JSON
 from util_comum import listar_modelos_ollama_locais
+from gerador_triplas import gerar_triplas_da_base_conhecimento, converter_ttl_para_triplas
 
 PATH_JSON = os.path.join(os.path.dirname(__file__), "relatorio_auditoria.json")
 PATH_MD = os.path.join(os.path.dirname(__file__), "relatorio_auditoria.md")
@@ -94,7 +95,7 @@ def carregar_json_relatorio():
 def main():
     # Header Principal
     st.markdown('<div class="main-header">🛡️ GraphRAG Compliance & Auditoria Suite</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Auditoria de 10 Tópicos Críticos com IA Local Paralelizada (Ollama) ou Cloud (Gemini API)</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Auditoria com Gerador de Triplas (IA / RDF / TTL) e Motor de Busca em Grafo</div>', unsafe_allow_html=True)
 
     # Sidebar - Configurações da Auditoria
     st.sidebar.image("https://img.icons8.com/isometric-folders/100/security-checked.png", width=70)
@@ -193,7 +194,7 @@ def main():
     tab_dash, tab_md, tab_triplas, tab_kb = st.tabs([
         "📊 Dashboard de Compliance",
         "📝 Relatório Markdown & Downloads",
-        "🕸️ Gerenciador de Triplas (triplas.json)",
+        "🕸️ Gerenciador de Triplas (gerador_triplas.py)",
         "📜 Base de Conhecimento (PDFs)"
     ])
 
@@ -258,16 +259,39 @@ def main():
                 conteudo_md = f.read()
             st.markdown(conteudo_md)
 
-    # TAB 3: GERENCIADOR DE TRIPLAS (triplas.json)
+    # TAB 3: GERENCIADOR DE TRIPLAS (gerador_triplas.py)
     with tab_triplas:
-        st.subheader("🕸️ Base de Triplas Deduplicadas (triplas.json)")
+        st.subheader("🕸️ Gerenciador & Gerador Automático de Triplas (`gerador_triplas.py`)")
         st.write("O arquivo `triplas.json` armazena as regras em formato `(Origem) -[Relação]-> (Destino)`. "
-                 "Novas triplas são adicionadas sem repetições para expandir continuamente o conhecimento do sistema.")
-        
-        triplas_lista = carregar_ou_inicializar_triplas()
-        
+                 "Você pode extrair novas triplas com a IA a partir da Base de Conhecimento ou importar arquivos `.ttl` (Turtle/RDF).")
+
+        col_g1, col_g2 = st.columns(2)
+        with col_g1:
+            st.markdown("#### 🧠 Extração Automática via IA")
+            btn_gerar_ia = st.button("✨ Gerar Novas Triplas da Base de Conhecimento (IA)", type="secondary")
+            if btn_gerar_ia:
+                with st.spinner(f"⏳ Extraindo triplas da Base de Conhecimento usando {provedor_opcao}..."):
+                    res_t = gerar_triplas_da_base_conhecimento(provedor=provedor_cod, modelo_local=modelo_local_sel)
+                    st.success(f"✅ Extração concluída! Total no triplas.json: {len(res_t)} triplas.")
+                    st.rerun()
+
+        with col_g2:
+            st.markdown("#### 🐢 Importar Arquivo Ontológico .ttl (Turtle/RDF)")
+            file_ttl = st.file_uploader("Upload de arquivo .ttl:", type=["ttl", "rdf"])
+            if file_ttl:
+                caminho_temp_ttl = os.path.join(os.path.dirname(__file__), file_ttl.name)
+                with open(caminho_temp_ttl, "wb") as f:
+                    f.write(file_ttl.read())
+                triplas_ttl = converter_ttl_para_triplas(caminho_temp_ttl)
+                if triplas_ttl:
+                    incrementar_triplas(triplas_ttl)
+                    st.success(f"✅ Importadas {len(triplas_ttl)} triplas do arquivo TTL para o triplas.json!")
+                    st.rerun()
+
+        st.divider()
+
         with st.form("form_incrementar_tripla"):
-            st.markdown("#### ➕ Incrementar Nova Tripla de Norma/Requisito")
+            st.markdown("#### ➕ Incrementar Nova Tripla Manualmente")
             f_col1, f_col2, f_col3, f_col4 = st.columns(4)
             in_origem = f_col1.text_input("Origem (ex: LGPD_Art_18):")
             in_relacao = f_col2.text_input("Relação (ex: EXIGE):")
@@ -285,7 +309,8 @@ def main():
                     st.warning("Preencha Origem, Relação e Destino.")
 
         st.divider()
-        st.markdown(f"**Total de Triplas Únicas:** `{len(triplas_lista)}`")
+        triplas_lista = carregar_ou_inicializar_triplas()
+        st.markdown(f"**Total de Triplas Únicas no `triplas.json`:** `{len(triplas_lista)}`")
         
         t_table = []
         for idx, t in enumerate(triplas_lista, start=1):

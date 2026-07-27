@@ -2,8 +2,8 @@
   "metadata": {
     "descricao": "Base de Triplas Deduplicadas do Grafo de Conhecimento de Compliance (LGPD, ISOs, TPRM)",
     "versao": "1.1",
-    "ultima_atualizacao": "2026-07-27 15:41:05",
-    "total_triplas": 29
+    "ultima_atualizacao": "2026-07-27 16:19:29",
+    "total_triplas": 42
   },
   "triplas": [
     {
@@ -179,6 +179,84 @@
       "relacao": "REQUER_EVIDENCIA",
       "destino": "Consentimento_Destacado_Sensivel_Menor",
       "fonte": "LGPD Art. 11, I e Art. 14 § 1º"
+    },
+    {
+      "origem": "ABNT_NBR_07470-0",
+      "relacao": "PROHIBE",
+      "destino": "Reproducao_de_partes_da_publicacao",
+      "fonte": "Página 2"
+    },
+    {
+      "origem": "NBR_ISO_IEC_27005",
+      "relacao": "MONITORAMENTO",
+      "destino": "Analisar_Riscos_Comitente",
+      "fonte": "NBR ISO IEC 27005"
+    },
+    {
+      "origem": "F",
+      "relacao": "Restrições",
+      "destino": "Modificação do risco",
+      "fonte": "Anexo G"
+    },
+    {
+      "origem": "Documento_br-third-party-risk-management.pdf_Pagina_1",
+      "relacao": "EMPRESTA_RELIANCIA_EM_NETRODE_TEIERCES",
+      "destino": "Rede_Robusta_Dependencia_Efetiva",
+      "fonte": "Texto da Norma"
+    },
+    {
+      "origem": "SEC",
+      "relacao": "ELABORARAM",
+      "destino": "Due_Diligence_Based_Riscos",
+      "fonte": "SEC_Guia_Joint"
+    },
+    {
+      "origem": "DOJ",
+      "relacao": "FORNECEU",
+      "destino": "Orientacoes_Avaliacao_Programas_Compliance_Corporativo",
+      "fonte": "DOJ_Orientacoes_PDF"
+    },
+    {
+      "origem": "LGPD_Art_18",
+      "relacao": "EXIGE",
+      "destino": "Canal_Atendimento_Titular",
+      "fonte": "LGPD Art. 18"
+    },
+    {
+      "origem": "TPRM_CCO",
+      "relacao": "REQUER_EVIDENCIA",
+      "destino": "Gerenciamento_De_terceiros_por_Riscos",
+      "fonte": "LGPD Art. 18"
+    },
+    {
+      "origem": "TPRM_CCO",
+      "relacao": "ESTRATIFICAR_RISOS",
+      "destino": "Due_Diligence_Terceiros",
+      "fonte": "LGPD Art. 18"
+    },
+    {
+      "origem": "LGPLA",
+      "relacao": "APLICA_CONTROLE",
+      "destino": "CANAL_ATEMENTO_TITULAR",
+      "fonte": "Canal_Atendimento_Titular"
+    },
+    {
+      "origem": "LGPD_Art_6_I",
+      "relacao": "DESTINHO",
+      "destino": "Finalidade",
+      "fonte": "Art. 6º I"
+    },
+    {
+      "origem": "Art_7_I",
+      "relacao": "PERMITE",
+      "destino": "Fornecimento_de_consentimento_pelo_titular",
+      "fonte": "LGPD_Art_7"
+    },
+    {
+      "origem": "Art_8_VI",
+      "relacao": "DEMANDA_Necessario",
+      "destino": "Execucao_de_Contrato",
+      "fonte": "LGPD_Art_8"
     }
   ]
 }
