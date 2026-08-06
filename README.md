@@ -14,7 +14,7 @@ O sistema utiliza a arquitetura **GraphRAG (Retrieval-Augmented Generation em Gr
 
 ## 👨‍💻 Autor e Créditos Acadêmicos
 
-- **Autor:** Flávio Mesquita
+- **Autores:** Flávio Mesquita, Yuri De Lima
 - **Instituição:** Universidade Federal da Paraíba (UFPB)
 - **Curso:** Bacharelado em Ciência da Computação
 - **Repositório GitHub:** [flaviofilho001/LGPD_Standards_And_Laws_Analyzer_For_Websites](https://github.com/flaviofilho001/LGPD_Standards_And_Laws_Analyzer_For_Websites)
