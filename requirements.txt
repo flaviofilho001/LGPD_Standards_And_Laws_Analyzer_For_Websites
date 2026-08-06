@@ -7,3 +7,5 @@ networkx
 streamlit
 pandas
 urllib3
+rdflib
+owlrl

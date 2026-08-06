@@ -1,0 +1,257 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix ex: <http://example.org/lgpd#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+ex:ABNT_NBR_07470_0 rdfs:label "ABNT_NBR_07470-0" ;
+    ex:PROHIBE ex:Reproducao_de_partes_da_publicacao ;
+    dcterms:source "Página 2" .
+
+ex:Art_7_I rdfs:label "Art_7_I" ;
+    ex:PERMITE ex:Fornecimento_de_consentimento_pelo_titular ;
+    dcterms:source "LGPD_Art_7" .
+
+ex:Art_8_VI rdfs:label "Art_8_VI" ;
+    ex:DEMANDA_Necessario ex:Execucao_de_Contrato ;
+    dcterms:source "LGPD_Art_8" .
+
+ex:ComplianceOntology a owl:Ontology ;
+    rdfs:label "Ontologia de Compliance LGPD, ISOs e TPRM" .
+
+ex:DOJ rdfs:label "DOJ" ;
+    ex:FORNECEU ex:Orientacoes_Avaliacao_Programas_Compliance_Corporativo ;
+    dcterms:source "DOJ_Orientacoes_PDF" .
+
+ex:Documento_br_third_party_risk_management_pdf_Pagina_1 rdfs:label "Documento_br-third-party-risk-management.pdf_Pagina_1" ;
+    ex:EMPRESTA_RELIANCIA_EM_NETRODE_TEIERCES ex:Rede_Robusta_Dependencia_Efetiva ;
+    dcterms:source "Texto da Norma" .
+
+ex:EvidenciaEmpirica a owl:Class .
+
+ex:F rdfs:label "F" ;
+    ex:Restri__es ex:Modifica__o_do_risco ;
+    dcterms:source "Anexo G" .
+
+ex:ISO_27005_2011 rdfs:label "ISO_27005_2011" ;
+    ex:FORNECE_DIRETRIZES ex:Processo_Gestao_Riscos_Seguranca_Informacao ;
+    ex:REGULA ex:Gestao_de_Riscos_de_Seguranca_da_Informacao ;
+    dcterms:source "NBR ISO IEC 27005:2011",
+        "Norma 27005:2011" .
+
+ex:LGPD rdfs:label "LGPD" ;
+    ex:EXIGE ex:LGPD_Art_18_Direitos_Titular,
+        ex:LGPD_Art_41_DPO,
+        ex:LGPD_Art_46_Seguranca_Tecnica_Admin,
+        ex:LGPD_Art_48_Notificacao_Incidentes,
+        ex:LGPD_Art_5_Identificacao_Controlador,
+        ex:LGPD_Art_7_Bases_Legais,
+        ex:LGPD_Art_8_Revogacao_Consentimento ;
+    ex:PROTEGE ex:LGPD_Art_11_14_Dados_Sensives_Menores ;
+    ex:REGULA ex:LGPD_Art_15_16_Retencao_Eliminacao,
+        ex:LGPD_Art_33_Transferencia_Compartilhamento ;
+    dcterms:source "LGPD Art. 11 e 14",
+        "LGPD Art. 15 e 16",
+        "LGPD Art. 18",
+        "LGPD Art. 33 e 34",
+        "LGPD Art. 41",
+        "LGPD Art. 46",
+        "LGPD Art. 48",
+        "LGPD Art. 5, VI",
+        "LGPD Art. 7",
+        "LGPD Art. 8 § 5º" .
+
+ex:LGPD_Art_18 rdfs:label "LGPD_Art_18" ;
+    ex:EXIGE ex:Canal_Atendimento_Titular ;
+    dcterms:source "LGPD Art. 18" .
+
+ex:LGPD_Art_6 rdfs:label "LGPD_Art_6" ;
+    ex:DEVER_OBSERVAR ex:Principio_Boa_Fe ;
+    dcterms:source "LGPD Art. 6º" .
+
+ex:LGPD_Art_6_I rdfs:label "LGPD_Art_6_I" ;
+    ex:DESTINHO ex:Finalidade ;
+    dcterms:source "Art. 6º I" .
+
+ex:LGPD_Art_7 rdfs:label "LGPD_Art_7" ;
+    ex:PERMITE ex:Tratamento_Dados_Pessoais ;
+    dcterms:source "LGPD Art. 7º" .
+
+ex:LGPD_Art_7_Inciso_I rdfs:label "LGPD_Art_7_Inciso_I" ;
+    ex:EXIGE ex:Consentimento_Titular ;
+    dcterms:source "LGPD Art. 7º, I" .
+
+ex:LGPD_Art_7_Inciso_II rdfs:label "LGPD_Art_7_Inciso_II" ;
+    ex:EXIGE ex:Cumprimento_Obrigacao_Legal ;
+    dcterms:source "LGPD Art. 7º, II" .
+
+ex:LGPLA rdfs:label "LGPLA" ;
+    ex:APLICA_CONTROLE ex:CANAL_ATEMENTO_TITULAR ;
+    dcterms:source "Canal_Atendimento_Titular" .
+
+ex:NBR_ISO_IEC_27005 rdfs:label "NBR_ISO_IEC_27005" ;
+    ex:MONITORAMENTO ex:Analisar_Riscos_Comitente ;
+    dcterms:source "NBR ISO IEC 27005" .
+
+ex:NormaRegulatoria a owl:Class .
+
+ex:RequisitoControle a owl:Class .
+
+ex:SEC rdfs:label "SEC" ;
+    ex:ELABORARAM ex:Due_Diligence_Based_Riscos ;
+    dcterms:source "SEC_Guia_Joint" .
+
+ex:Secao_5_7_2 rdfs:label "Secao_5_7_2" ;
+    ex:PROMOVE ex:Melhoria_Continua ;
+    dcterms:source "Secao 5.7.2" .
+
+ex:TPRM_CCO rdfs:label "TPRM_CCO" ;
+    ex:ESTRATIFICAR_RISOS ex:Due_Diligence_Terceiros ;
+    ex:REQUER_EVIDENCIA ex:Gerenciamento_De_terceiros_por_Riscos ;
+    dcterms:source "LGPD Art. 18" .
+
+ex:TPRM_Contexto rdfs:label "TPRM_Contexto" ;
+    ex:COMPREENDE ex:Intermediarios_Fornecedores_Distribuidores_Agentes_JointVentureS_Aliancas_Subcontratados_PrestadoresDeServicos ;
+    ex:ENVOLVE ex:Rede_de_Terceiros ;
+    dcterms:source "-1",
+        "br-third-party-risk-management.pdf P1" .
+
+ex:Acesso_Correcao_Eliminacao_Portabilidade rdfs:label "Acesso_Correcao_Eliminacao_Portabilidade" .
+
+ex:Analisar_Riscos_Comitente rdfs:label "Analisar_Riscos_Comitente" .
+
+ex:CANAL_ATEMENTO_TITULAR rdfs:label "CANAL_ATEMENTO_TITULAR" .
+
+ex:Canal_Atendimento_Solicitacoes_Titular rdfs:label "Canal_Atendimento_Solicitacoes_Titular" .
+
+ex:Canal_Atendimento_Titular rdfs:label "Canal_Atendimento_Titular" .
+
+ex:Cifragem_Dados_Transito_HTTPS_TLS rdfs:label "Cifragem_Dados_Transito_HTTPS_TLS" .
+
+ex:Clausulas_Contratuais_Compliance_Terceiros rdfs:label "Clausulas_Contratuais_Compliance_Terceiros" .
+
+ex:Consentimento_Destacado_Sensivel_Menor rdfs:label "Consentimento_Destacado_Sensivel_Menor" .
+
+ex:Consentimento_Titular rdfs:label "Consentimento_Titular" .
+
+ex:Cumprimento_Obrigacao_Legal rdfs:label "Cumprimento_Obrigacao_Legal" .
+
+ex:Divulga__o_P_blica_Contato_DPO rdfs:label "Divulgação_Pública_Contato_DPO" .
+
+ex:Due_Diligence_Based_Riscos rdfs:label "Due_Diligence_Based_Riscos" .
+
+ex:Due_Diligence_Terceiros rdfs:label "Due_Diligence_Terceiros" .
+
+ex:Especificacao_Finalidade_Tratamento rdfs:label "Especificacao_Finalidade_Tratamento" .
+
+ex:Execucao_de_Contrato rdfs:label "Execucao_de_Contrato" .
+
+ex:Finalidade rdfs:label "Finalidade" .
+
+ex:Fornecimento_de_consentimento_pelo_titular rdfs:label "Fornecimento_de_consentimento_pelo_titular" .
+
+ex:Gerenciamento_De_terceiros_por_Riscos rdfs:label "Gerenciamento_De_terceiros_por_Riscos" .
+
+ex:Gestao_de_Riscos_de_Seguranca_da_Informacao rdfs:label "Gestao_de_Riscos_de_Seguranca_da_Informacao" .
+
+ex:ISO_27002_Controle_10_Criptografia rdfs:label "ISO_27002_Controle_10_Criptografia" ;
+    ex:REQUER_EVIDENCIA ex:Cifragem_Dados_Transito_HTTPS_TLS ;
+    dcterms:source "ISO 27002 Controle 10.1" .
+
+ex:ISO_27002_Controle_12_Backup_Logs rdfs:label "ISO_27002_Controle_12_Backup_Logs" ;
+    ex:REQUER_EVIDENCIA ex:Retencao_Logs_e_Protecao_Malware ;
+    dcterms:source "ISO 27002 Controle 12.4" .
+
+ex:ISO_27002_Controle_15_TPRM_Fornecedores rdfs:label "ISO_27002_Controle_15_TPRM_Fornecedores" ;
+    ex:APLICA_CONTROLE ex:TPRM_Gestao_Riscos_Terceiros ;
+    dcterms:source "ISO 31000 & TPRM Framework" .
+
+ex:ISO_27002_Controle_16_Gestao_Incidentes rdfs:label "ISO_27002_Controle_16_Gestao_Incidentes" .
+
+ex:ISO_27002_Controle_8_Classificacao rdfs:label "ISO_27002_Controle_8_Classificacao" .
+
+ex:ISO_27002_Controle_8_Retencao rdfs:label "ISO_27002_Controle_8_Retencao" .
+
+ex:Intermediarios_Fornecedores_Distribuidores_Agentes_JointVentureS_Aliancas_Subcontratados_PrestadoresDeServicos rdfs:label "Intermediarios_Fornecedores_Distribuidores_Agentes_JointVentureS_Aliancas_Subcontratados_PrestadoresDeServicos" .
+
+ex:LGPD_Art_11_14_Dados_Sensives_Menores rdfs:label "LGPD_Art_11_14_Dados_Sensives_Menores" ;
+    ex:APLICA_CONTROLE ex:ISO_27002_Controle_8_Classificacao ;
+    ex:REQUER_EVIDENCIA ex:Consentimento_Destacado_Sensivel_Menor ;
+    dcterms:source "ISO 27002 Controle 8.2",
+        "LGPD Art. 11, I e Art. 14 § 1º" .
+
+ex:LGPD_Art_15_16_Retencao_Eliminacao rdfs:label "LGPD_Art_15_16_Retencao_Eliminacao" ;
+    ex:APLICA_CONTROLE ex:ISO_27002_Controle_8_Retencao ;
+    ex:REQUER_EVIDENCIA ex:Politica_Prazo_Descarte_Eliminacao_Dados ;
+    dcterms:source "ISO 27002 Controle 8.3",
+        "LGPD Art. 16" .
+
+ex:LGPD_Art_18_Direitos_Titular rdfs:label "LGPD_Art_18_Direitos_Titular" ;
+    ex:INCLUI_DIREITO ex:Acesso_Correcao_Eliminacao_Portabilidade ;
+    ex:REQUER_EVIDENCIA ex:Canal_Atendimento_Solicitacoes_Titular ;
+    dcterms:source "LGPD Art. 18, I a IX",
+        "LGPD Art. 19 (Prazo 15 dias)" .
+
+ex:LGPD_Art_33_Transferencia_Compartilhamento rdfs:label "LGPD_Art_33_Transferencia_Compartilhamento" ;
+    ex:APLICA_CONTROLE ex:ISO_27002_Controle_15_TPRM_Fornecedores ;
+    dcterms:source "ISO 27002 Seção 15" .
+
+ex:LGPD_Art_41_DPO rdfs:label "LGPD_Art_41_DPO" ;
+    ex:REQUER_EVIDENCIA ex:Divulga__o_P_blica_Contato_DPO ;
+    dcterms:source "LGPD Art. 41 § 1º" .
+
+ex:LGPD_Art_46_Seguranca_Tecnica_Admin rdfs:label "LGPD_Art_46_Seguranca_Tecnica_Admin" ;
+    ex:APLICA_CONTROLE ex:ISO_27002_Controle_10_Criptografia,
+        ex:ISO_27002_Controle_12_Backup_Logs ;
+    dcterms:source "ISO 27002 Seção 10",
+        "ISO 27002 Seção 12" .
+
+ex:LGPD_Art_48_Notificacao_Incidentes rdfs:label "LGPD_Art_48_Notificacao_Incidentes" ;
+    ex:APLICA_CONTROLE ex:ISO_27002_Controle_16_Gestao_Incidentes ;
+    ex:REQUER_EVIDENCIA ex:Procedimento_Comunicacao_ANPD_Titulares ;
+    dcterms:source "ISO 27002 Seção 16",
+        "LGPD Art. 48 § 1º" .
+
+ex:LGPD_Art_5_Identificacao_Controlador rdfs:label "LGPD_Art_5_Identificacao_Controlador" ;
+    ex:REQUER_EVIDENCIA ex:Razao_Social_e_CNPJ_Claros ;
+    dcterms:source "LGPD Art. 6, VI (Transparência)" .
+
+ex:LGPD_Art_7_Bases_Legais rdfs:label "LGPD_Art_7_Bases_Legais" ;
+    ex:DISPOE_SOBRE ex:Especificacao_Finalidade_Tratamento ;
+    dcterms:source "LGPD Art. 6, I" .
+
+ex:LGPD_Art_8_Revogacao_Consentimento rdfs:label "LGPD_Art_8_Revogacao_Consentimento" ;
+    ex:REQUER_EVIDENCIA ex:Procedimento_Gratuito_Facil_OptOut ;
+    dcterms:source "LGPD Art. 8 § 4º e 5º" .
+
+ex:Melhoria_Continua rdfs:label "Melhoria_Continua" .
+
+ex:Modifica__o_do_risco rdfs:label "Modificação do risco" .
+
+ex:Orientacoes_Avaliacao_Programas_Compliance_Corporativo rdfs:label "Orientacoes_Avaliacao_Programas_Compliance_Corporativo" .
+
+ex:Politica_Prazo_Descarte_Eliminacao_Dados rdfs:label "Politica_Prazo_Descarte_Eliminacao_Dados" .
+
+ex:Principio_Boa_Fe rdfs:label "Principio_Boa_Fe" .
+
+ex:Procedimento_Comunicacao_ANPD_Titulares rdfs:label "Procedimento_Comunicacao_ANPD_Titulares" .
+
+ex:Procedimento_Gratuito_Facil_OptOut rdfs:label "Procedimento_Gratuito_Facil_OptOut" .
+
+ex:Processo_Gestao_Riscos_Seguranca_Informacao rdfs:label "Processo_Gestao_Riscos_Seguranca_Informacao" .
+
+ex:Razao_Social_e_CNPJ_Claros rdfs:label "Razao_Social_e_CNPJ_Claros" .
+
+ex:Rede_Robusta_Dependencia_Efetiva rdfs:label "Rede_Robusta_Dependencia_Efetiva" .
+
+ex:Rede_de_Terceiros rdfs:label "Rede_de_Terceiros" .
+
+ex:Reproducao_de_partes_da_publicacao rdfs:label "Reproducao_de_partes_da_publicacao" .
+
+ex:Retencao_Logs_e_Protecao_Malware rdfs:label "Retencao_Logs_e_Protecao_Malware" .
+
+ex:TPRM_Gestao_Riscos_Terceiros rdfs:label "TPRM_Gestao_Riscos_Terceiros" ;
+    ex:REQUER_EVIDENCIA ex:Clausulas_Contratuais_Compliance_Terceiros ;
+    dcterms:source "ISO 27002 Controle 15.1" .
+
+ex:Tratamento_Dados_Pessoais rdfs:label "Tratamento_Dados_Pessoais" .
+

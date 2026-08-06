@@ -32,8 +32,9 @@ except ImportError:
     except ImportError:
         HAS_OLD_GENAI = False
 
-MODELO_GERACAO = "gemini-2.0-flash"
+MODELO_GERACAO = "gemini-2.5-flash"
 OLLAMA_HOST = "http://localhost:11434"
+
 
 
 def obter_api_key():
@@ -49,20 +50,25 @@ def obter_api_key():
     return key
 
 
-def criar_cliente():
-    """Inicializa o cliente da API do Gemini."""
-    api_key = obter_api_key()
-    if not api_key:
+def criar_cliente(api_key: str = None):
+    """Inicializa o cliente da API do Gemini de forma segura."""
+    key = api_key or obter_api_key()
+    if not key:
         print("[AVISO] Nenhuma chave GEMINI_API_KEY ou GOOGLE_API_KEY encontrada.")
+        return None
         
-    if HAS_NEW_GENAI:
-        return genai.Client(api_key=api_key) if api_key else genai.Client()
-    elif HAS_OLD_GENAI:
-        if api_key:
-            genai_old.configure(api_key=api_key)
-        return genai_old
-    else:
-        raise ImportError("Nenhuma biblioteca do Google GenAI instalada.")
+    try:
+        if HAS_NEW_GENAI:
+            return genai.Client(api_key=key)
+        elif HAS_OLD_GENAI:
+            genai_old.configure(api_key=key)
+            return genai_old
+    except Exception as e:
+        print(f"[ERRO] Falha ao criar cliente Gemini: {e}")
+        return None
+        
+    return None
+
 
 
 def listar_modelos_ollama_locais(host: str = OLLAMA_HOST) -> list:
@@ -125,22 +131,32 @@ def chamar_api(func_ou_metodo, *args, **kwargs):
     return None
 
 
-def gerar_resposta_llm(prompt: str, provedor: str = "ollama", modelo_local: str = "qwen3.5:2b", cliente_gemini=None) -> str:
+def gerar_resposta_llm(prompt: str, provedor: str = "ollama", modelo_local: str = "qwen3.5:2b", cliente_gemini=None, exigi_json: bool = True) -> str:
     """Interface unificada para geração de respostas por IA (Ollama Local ou Gemini API)."""
     provedor_clean = str(provedor).lower().strip()
     
     if provedor_clean == "ollama":
-        resposta = chamar_ollama_local(prompt, modelo=modelo_local)
+        resposta = chamar_ollama_local(prompt, modelo=modelo_local, exigi_json=exigi_json)
         if resposta:
             return resposta
         provedor_clean = "gemini"
 
-    if provedor_clean == "gemini" and cliente_gemini:
-        res = chamar_api(cliente_gemini.models.generate_content, model=MODELO_GERACAO, contents=prompt)
-        if res and hasattr(res, "text"):
-            return res.text
+    if provedor_clean == "gemini":
+        if not cliente_gemini:
+            cliente_gemini = criar_cliente()
+        if cliente_gemini:
+            for mod in ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]:
+                try:
+                    res = chamar_api(cliente_gemini.models.generate_content, model=mod, contents=prompt)
+                    if res and hasattr(res, "text") and res.text:
+                        return res.text
+                except Exception:
+                    continue
+
             
     return ""
+
+
 
 
 def limpar_json_markdown(texto: str) -> str:

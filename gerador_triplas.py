@@ -164,6 +164,11 @@ def gerar_triplas_da_base_conhecimento(provedor: str = "ollama", modelo_local: s
 
     if novas_triplas_geradas:
         triplas_finais = incrementar_triplas(novas_triplas_geradas)
+        try:
+            from carregar_grafo_rdf import exportar_triplas_para_turtle_rdf
+            exportar_triplas_para_turtle_rdf()
+        except Exception:
+            pass
         return triplas_finais
     else:
         print(" -> Nenhuma nova tripla inédita adicionada nesta rodada.")
@@ -176,13 +181,23 @@ if __name__ == "__main__":
     parser.add_argument("--provedor", default="ollama", choices=["ollama", "gemini"], help="Provedor de IA")
     parser.add_argument("--modelo", default="qwen3.5:2b", help="Modelo Ollama Local")
     parser.add_argument("--ttl", help="Caminho para arquivo .ttl (Turtle/RDF) para converter")
+    parser.add_argument("--export-ttl", action="store_true", help="Exporta triplas.json para knowledge_graph.ttl em sintaxe Turtle")
 
     args = parser.parse_args()
 
-    if args.ttl:
+    if args.export_ttl:
+        from carregar_grafo_rdf import exportar_triplas_para_turtle_rdf
+        exportar_triplas_para_turtle_rdf()
+    elif args.ttl:
         print(f"Convertendo arquivo TTL '{args.ttl}' para triplas.json...")
         triplas_ttl = converter_ttl_para_triplas(args.ttl)
         if triplas_ttl:
             incrementar_triplas(triplas_ttl)
+            try:
+                from carregar_grafo_rdf import exportar_triplas_para_turtle_rdf
+                exportar_triplas_para_turtle_rdf()
+            except Exception:
+                pass
     else:
         gerar_triplas_da_base_conhecimento(provedor=args.provedor, modelo_local=args.modelo)
+

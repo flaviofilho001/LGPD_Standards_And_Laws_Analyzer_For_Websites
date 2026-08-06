@@ -383,9 +383,117 @@ def executar_auditoria_completa(urls: list, novas_triplas=None, provedor="ollama
     return relatorio_json
 
 
+def responder_pergunta_livre_graphrag(pergunta: str, g=None, triplas=None, provedor="ollama", modelo_local="qwen3.5:2b", cliente_gemini=None) -> dict:
+    """Responde a uma pergunta em linguagem natural usando o Grafo de Conhecimento (GraphRAG)."""
+    if g is None:
+        g, triplas = construir_grafo_compliance()
+        
+    pergunta_lower = pergunta.lower()
+    
+    nos_candidatos = []
+    for no in g.nodes():
+        no_str = str(no).replace("_", " ").lower()
+        palavras_no = [p for p in no_str.split() if len(p) > 3]
+        if any(p in pergunta_lower for p in palavras_no) or no_str in pergunta_lower:
+            nos_candidatos.append(no)
+            
+    if not nos_candidatos:
+        nos_candidatos = list(g.nodes())[:5]
+        
+    g_und = g.to_undirected()
+    nos_subgrafo = set()
+    for c in nos_candidatos[:6]:
+        if c in g:
+            nos_subgrafo |= set(nx.ego_graph(g_und, c, radius=2).nodes)
+            
+    subgrafo = g.subgraph(nos_subgrafo) if nos_subgrafo else g
+    
+    linhas_triplas = []
+    triplas_listadas = []
+    for u, v, d in subgrafo.edges(data=True):
+        rel = d.get("relacao", "RELACIONADO")
+        fonte = d.get("fonte", "LGPD/ISO")
+        linhas_triplas.append(f"- ({u}) -[{rel}]-> ({v}) [Fonte: {fonte}]")
+        triplas_listadas.append({
+            "origem": u,
+            "relacao": rel,
+            "destino": v,
+            "fonte": fonte
+        })
+        
+    contexto_triplas = "\n".join(linhas_triplas[:30])
+    
+    prompt = f"""Você é um assistente especialista em LGPD, ISO 27001/27002, ISO 31000 e Governança de Dados.
+
+Responda à pergunta do usuário utilizando como CONTEXTO FUNDAMENTAL as regras e relacionamentos do Grafo de Conhecimento abaixo.
+
+CONTEXTO DO GRAFO DE CONHECIMENTO (Subgrafo GraphRAG):
+{contexto_triplas}
+
+PERGUNTA DO USUÁRIO:
+{pergunta}
+
+INSTRUÇÕES DE RESPOSTA:
+1. Responda de forma clara, técnica e objetiva em português.
+2. Ancore sua resposta nas regras e conceitos extraídos do Grafo de Conhecimento.
+3. Cite explicitamente as normas/artigos que sustentam o raciocínio (ex: LGPD Art. 18, ISO 27002).
+"""
+    
+    resposta_texto = gerar_resposta_llm(
+        prompt,
+        provedor=provedor,
+        modelo_local=modelo_local,
+        cliente_gemini=cliente_gemini,
+        exigi_json=False
+    )
+
+    
+    if not resposta_texto:
+        regras_formatadas = []
+        for t in triplas_listadas[:10]:
+            regras_formatadas.append(f"- O conceito '{t['origem'].replace('_', ' ')}' {t['relacao'].replace('_', ' ').lower()} '{t['destino'].replace('_', ' ')}' (Fonte: {t['fonte']}).")
+            
+        texto_regras = "\n".join(regras_formatadas) if regras_formatadas else "Nenhuma tripla normativamente direta encontrada no grafo para os termos pesquisados."
+        
+        resposta_texto = (
+            f"Com base na análise do Grafo de Conhecimento regulatório, foram recuperadas as seguintes regras e exigências normativas para a sua consulta:\n\n"
+            f"{texto_regras}\n\n"
+            "(Obs: Para obter síntese contextual avançada por modelo de linguagem, certifique-se de que o Ollama está rodando localmente na porta 11434 ou informe sua chave API do Gemini na barra lateral)."
+        )
+    
+    return {
+        "pergunta": pergunta,
+        "resposta": resposta_texto,
+        "nos_ancoras": nos_candidatos,
+        "total_nos_subgrafo": subgrafo.number_of_nodes(),
+        "total_arestas_subgrafo": subgrafo.number_of_edges(),
+        "triplas_utilizadas": triplas_listadas[:15]
+    }
+
+
+
 if __name__ == "__main__":
-    sample_urls = [
-        "https://www.vizinhub.com.br/privacy",
-        "https://www.vizinhub.com.br/terms"
-    ]
-    executar_auditoria_completa(sample_urls, provedor="ollama", modelo_local="gemma4:12b", max_workers=2)
+    import argparse
+    parser = argparse.ArgumentParser(description="Motor Core GraphRAG de Compliance LGPD & ISOs")
+    parser.add_argument("--pergunta", type=str, help="Pergunta em linguagem natural para consultar o Grafo de Conhecimento")
+    parser.add_argument("--urls", nargs="+", help="URLs dos sites para auditoria de 10 tópicos")
+    parser.add_argument("--provedor", default="ollama", choices=["ollama", "gemini", "heuristico"])
+    parser.add_argument("--modelo", default="qwen3.5:2b")
+    
+    args = parser.parse_args()
+    
+    if args.pergunta:
+        res = responder_pergunta_livre_graphrag(args.pergunta, provedor=args.provedor, modelo_local=args.modelo)
+        print("\n" + "="*80)
+        print(f"PERGUNTA: {res['pergunta']}")
+        print(f"NÓS ÂNCORA: {res['nos_ancoras']}")
+        print(f"SUBGRAFO: {res['total_nos_subgrafo']} nós, {res['total_arestas_subgrafo']} arestas")
+        print("="*80)
+        print(f"RESPOSTA:\n{res['resposta']}")
+    else:
+        sample_urls = args.urls or [
+            "https://www.vizinhub.com.br/privacy",
+            "https://www.vizinhub.com.br/terms"
+        ]
+        executar_auditoria_completa(sample_urls, provedor=args.provedor, modelo_local=args.modelo, max_workers=2)
+
